@@ -23,16 +23,8 @@ export default function Index() {
   return (
     <>
       <Switcher />
-      <input type="text" id="url" placeholder="URL을 입력하세요" />
-      <button
-        onClick={async () => {
-          // const url = (document.getElementById("url") as HTMLInputElement).value;
-        }}
-      >
-        크롤링시작
-      </button>
 
-      <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+      <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-9/12 m-auto">
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
