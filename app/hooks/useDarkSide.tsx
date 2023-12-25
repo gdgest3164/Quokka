@@ -2,12 +2,10 @@ import { useState, useEffect } from "react";
 
 export default function useDarkSide(): [string, React.Dispatch<React.SetStateAction<string>>] {
   const [theme, setTheme] = useState<string>(() => {
-    // Check if localStorage is available
     if (typeof window !== "undefined") {
       return localStorage.theme || "light";
     } else {
-      // Fallback value if localStorage is not available
-      return "light";
+      return "dark";
     }
   });
 
