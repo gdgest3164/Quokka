@@ -4,7 +4,7 @@ import { Theme, isTheme } from "./theme-provider";
 
 const themeStorage = createCookieSessionStorage({
   cookie: {
-    name: "my_remix_theme",
+    name: "quokka_theme",
     secure: true,
     secrets: [getRequiredServerEnvVar("SESSION_SECRET")],
     sameSite: "lax",
@@ -23,6 +23,10 @@ async function getThemeSession(request: Request) {
     },
     setTheme: (theme: Theme) => {
       session.set("theme", theme);
+      // 업데이트된 만료 날짜를 설정
+      const updatedExpires = new Date();
+      updatedExpires.setDate(updatedExpires.getDate() + 1); // 하루 더해주거나 필요한 만큼 설정
+      session.set("expires", updatedExpires);
     },
     commit: () => themeStorage.commitSession(session),
   };

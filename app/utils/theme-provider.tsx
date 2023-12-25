@@ -140,7 +140,6 @@ function useTheme() {
 }
 
 function isTheme(value: unknown): value is Theme {
-  console.log(typeof value === "string" && themes.includes(value as Theme));
   return typeof value === "string" && themes.includes(value as Theme);
 }
 
