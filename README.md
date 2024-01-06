@@ -1,38 +1,18 @@
-# Welcome to Remix!
+# 쿼카 첫 플랫폼!
 
-- [Remix Docs](https://remix.run/docs)
+- [쿼카 사이트](https://quokka-seven.vercel.app/)
 
-## Development
+## 개발자
 
-From your terminal:
+- 김동한
+- 김주형
 
-```sh
-npm run dev
-```
+## Tool
 
-This starts your app in development mode, rebuilding assets on file changes.
+리액트 기반 Typescript
+Remix 프레임워크 (코드스플리팅 패턴)
 
-## Deployment
+## 설명
 
-First, build your app for production:
-
-```sh
-npm run build
-```
-
-Then run the app in production mode:
-
-```sh
-npm start
-```
-
-Now you'll need to pick a host to deploy it to.
-
-### DIY
-
-If you're familiar with deploying node applications, the built-in Remix app server is production-ready.
-
-Make sure to deploy the output of `remix build`
-
-- `build/`
-- `public/build/`
+스마트스토어와 수 백개의 도매사이트를 연계하여 자동으로 재고 관리하는 플랫폼
+재고, 가격, 마진율 등 자동으로 관리할 수 있습니다.
