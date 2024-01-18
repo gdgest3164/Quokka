@@ -16,6 +16,7 @@
 
 리액트 기반 Typescript
 Remix 프레임워크 (코드스플리팅 패턴)
+TailWind
 
 ## 목표
 
