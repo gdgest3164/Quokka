@@ -6,6 +6,12 @@ import Switcher from "../Components/Switcher";
 interface RepresentativeImage {
   url: string;
 }
+interface ProductDetails {
+  originProductNo: number;
+  addressBookNo: number;
+  name: string;
+  wholesale_url: string;
+}
 
 interface ChannelProduct {
   originProductNo: number;
@@ -37,6 +43,7 @@ interface ChannelProduct {
   regDate: string;
   modifiedDate: string;
   channelNo: number;
+  details: ProductDetails[];
 }
 
 interface Product {
@@ -44,27 +51,25 @@ interface Product {
   channelProducts: ChannelProduct[];
 }
 
-// interface ProductsResponse {
-//   contents: Product[];
-//   page: number;
-//   size: number;
-//   totalElements: number;
-//   totalPages: number;
-//   sort: {
-//     sorted: boolean;
-//     fields: {
-//       name: string;
-//       direction: string;
-//     }[];
-//   };
-//   first: boolean;
-//   last: boolean;
-// }
-
+interface ProductAddress {
+  addressBookNo: number;
+  name: string;
+  addressType: string;
+  postalCode: string;
+  baseAddress: string;
+  detailAddress: string;
+  address: string;
+  phoneNumber1: string;
+  phoneNumber2: string;
+  hasLocation: boolean;
+  roadNameAddress: boolean;
+  overseasAddress: boolean;
+}
 interface ProductsResponse {
   products: Product[];
   totalElements: number;
   size: number;
+  address: ProductAddress[];
 }
 
 export const meta: MetaFunction = () => {
@@ -78,7 +83,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const size: number = parseInt(searchParams.get("size") as string) || 10;
   const page: number = parseInt(searchParams.get("page") as string) || 1;
 
-  const response = await fetch(`http://3.38.116.254:8000/api/seller/products?size=${size}&page=${page}`, {
+  const response = await fetch(`http://http://3.38.116.254:8000/api/seller/products?size=${size}&page=${page}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -93,12 +98,37 @@ export default function Index() {
   const { products } = useLoaderData<typeof loader>();
   const { state } = useNavigation();
   const navigate = useNavigate();
+  const table_title = ["상품번호", "대표이미지", "상품명", "판매 가격", "재고 수", "브랜드", "등록일", "도매업"];
 
+  console.log(products);
+
+  //페이네이션 이벤트
   const handleNavigation = (e: React.MouseEvent<HTMLButtonElement>) => {
     const target = e.target as HTMLButtonElement;
     const isForwardRequest = target.getAttribute("data-nav-operation") === "next";
     const offset = isForwardRequest ? 1 : -1;
     navigate(`?size=${products.size}&page=${products.page + offset}`);
+  };
+
+  //도매업 주소 선택 이벤트
+  const handleWholesaleAddress = async (e: React.ChangeEvent<HTMLSelectElement>, originProductNo: number) => {
+    const target = e.target as HTMLSelectElement;
+    const addressBookNo = target.value;
+    const response = await fetch(`http://http://3.38.116.254:8000/api/seller/product/address/update?originProductNo=${originProductNo}&addressBookNo=${addressBookNo}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      mode: "no-cors",
+    });
+
+    console.log(response);
+    // if (response.ok) {
+    //   const products = await response.json();
+    //   return json({ products });
+    // } else {
+    //   throw new Error("서버에서 응답이 없습니다.");
+    // }
   };
 
   return (
@@ -110,33 +140,17 @@ export default function Index() {
           <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
-                <th scope="col" className="px-6 py-3">
-                  상품번호
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  대표이미지
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  상품명
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  판매 가격
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  재고 수
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  브랜드
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  등록일
-                </th>
+                {table_title.map((t, i) => (
+                  <th key={i} scope="col" className="px-6 py-3 whitespace-nowrap text-center">
+                    {t}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {state === "loading" ? (
                 <tr>
-                  <th colSpan={7}>
+                  <th colSpan={table_title.length}>
                     <div className="flex justify-center items-center m-4">
                       <div role="status">
                         <svg
@@ -164,17 +178,34 @@ export default function Index() {
                 <>
                   {products.contents.map((product: Product) => (
                     <tr key={product.channelProducts[0].originProductNo} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-                      <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                      <th scope="row" className="px-4 py-3 text-xs text-gray-900 whitespace-nowrap dark:text-white">
                         {product.channelProducts[0].originProductNo}
                       </th>
-                      <td className="px-6 py-4">
-                        <img src={product.channelProducts[0].representativeImage.url} alt={product.channelProducts[0].name} className={"w-32"} loading="lazy" />
+                      <td className="px-4 py-3">
+                        <img src={product.channelProducts[0].representativeImage.url} alt={product.channelProducts[0].name} className={"w-24"} loading="lazy" />
                       </td>
-                      <td className="px-6 py-4">{product.channelProducts[0].name}</td>
-                      <td className="px-6 py-4">{product.channelProducts[0].salePrice}</td>
-                      <td className="px-6 py-4">{product.channelProducts[0].stockQuantity}</td>
-                      <td className="px-6 py-4">{product.channelProducts[0].brandName}</td>
-                      <td className="px-6 py-4">{new Date(product.channelProducts[0].regDate).toISOString().split("T")[0]}</td>
+                      <td className="px-4 py-3 text-sm">{product.channelProducts[0].name}</td>
+                      <td className="px-4 py-3">{product.channelProducts[0].salePrice}</td>
+                      <td className="px-4 py-3">{product.channelProducts[0].stockQuantity}</td>
+                      <td className="px-4 py-3">{product.channelProducts[0].brandName}</td>
+                      <td className="px-4 py-3 whitespace-nowrap">{new Date(product.channelProducts[0].regDate).toISOString().split("T")[0]}</td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <select
+                          id="countries"
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                          onChange={(e) => handleWholesaleAddress(e, product.originProductNo)}
+                          defaultValue={product.channelProducts[0].details && product.channelProducts[0].details.length > 0 ? product.channelProducts[0].details[0].addressBookNo : "없음"}
+                        >
+                          <option value={""}>없음</option>
+                          {products.address["addressBooks"].map((prd_addr: ProductAddress) => (
+                            <>
+                              <option key={prd_addr.addressBookNo} value={prd_addr.addressBookNo}>
+                                {prd_addr.name}
+                              </option>
+                            </>
+                          ))}
+                        </select>
+                      </td>
                     </tr>
                   ))}
                 </>
