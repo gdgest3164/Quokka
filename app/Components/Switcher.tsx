@@ -13,7 +13,7 @@ export default function Switcher() {
 
   return (
     <>
-      <DarkModeSwitch className="m-8 w-full" checked={darkSide} onChange={toggleDarkMode} size={30} />
+      <DarkModeSwitch className="mx-auto my-8" checked={darkSide} onChange={toggleDarkMode} size={30} />
     </>
   );
 }
