@@ -163,7 +163,11 @@ export default function Index() {
                         <div className="animate-pulse flex space-x-4">
                           <div className="flex-1 space-y-6 py-1">
                             <div className="space-y-3">
-                              {t.title == "대표이미지" ? <div className="bg-slate-700 rounded col-span-2 w-24 h-20"></div> : <div className="h-2 bg-slate-700 rounded col-span-2 "></div>}
+                              {t.title == "대표이미지" ? (
+                                <div className="bg-slate-200 dark:bg-slate-500 rounded col-span-2 w-24 h-20"></div>
+                              ) : (
+                                <div className="h-2 bg-slate-200 dark:bg-slate-500 rounded col-span-2 "></div>
+                              )}
                             </div>
                           </div>
                         </div>
