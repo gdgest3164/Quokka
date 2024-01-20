@@ -100,8 +100,6 @@ export default function Index() {
   const navigate = useNavigate();
   const table_title = ["상품번호", "대표이미지", "상품명", "판매 가격", "재고 수", "브랜드", "등록일", "도매업"];
 
-  console.log(products);
-
   //페이네이션 이벤트
   const handleNavigation = (e: React.MouseEvent<HTMLButtonElement>) => {
     const target = e.target as HTMLButtonElement;
@@ -119,7 +117,7 @@ export default function Index() {
       headers: {
         "Content-Type": "application/json",
       },
-      mode: "no-cors",
+      mode: "cors",
     });
 
     console.log(response);
