@@ -78,7 +78,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const size: number = parseInt(searchParams.get("size") as string) || 10;
   const page: number = parseInt(searchParams.get("page") as string) || 1;
 
-  const response = await fetch(`http://3.38.116.254:8000/brand-info/products?size=${size}&page=${page}`, {
+  const response = await fetch(`http://3.38.116.254:8000/api/seller/products?size=${size}&page=${page}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
