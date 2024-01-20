@@ -66,7 +66,15 @@ export const meta: MetaFunction = () => {
 };
 
 export const loader: LoaderFunction = async () => {
-  const response = await fetch("http://3.38.116.254:8000/brand-info/products");
+  const response = await fetch("http://3.38.116.254:8000/brand-info/products", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      data: { size: "10", page: "1" },
+    }),
+  });
   const products = await response.json();
   return json({ products });
 };
