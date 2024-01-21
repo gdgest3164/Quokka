@@ -8,28 +8,13 @@ import { getThemeSession } from "./utils/theme.server";
 import styles from "./tailwind.css";
 
 export const meta: MetaFunction = () => {
-  const title = "Remix Dark Mode";
-  const description = "A demo for adding a dark mode to a Remix app.";
-  // const url = "https://remix-dark-mode.vercel.app/";
-  // const image = `${url}remix-dark-mode.png`;
+  const title = "쿼카 재고관리";
+  const description = "쿼카 재고 관리 자동화";
 
   return [
     {
-      title,
-      description,
-      // keywords: "Remix, Dark Mode",
-      // image,
-      // "og:url": url,
-      // "og:title": title,
-      // "og:description": description,
-      // "og:image": image,
-      // "twitter:card": "summary_large_image",
-      // "twitter:creator": "@matt_stobbs",
-      // "twitter:site": "@matt_stobbs",
-      // "twitter:title": title,
-      // "twitter:description": description,
-      // "twitter:image": image,
-      // "twitter:alt": title,
+      "og:title": title,
+      "og:description": description,
     },
   ];
 };
@@ -58,7 +43,7 @@ function App() {
   const [theme] = useTheme();
 
   return (
-    <html lang="en" className={clsx(theme)}>
+    <html lang="kr" className={clsx(theme)}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />

@@ -83,7 +83,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const size: number = parseInt(searchParams.get("size") as string) || 10;
   const page: number = parseInt(searchParams.get("page") as string) || 1;
 
-  const response = await fetch(`http://3.38.116.254:8000/api/seller/products?size=${size}&page=${page}`, {
+  const response = await fetch(`http://127.0.0.1:8000/api/seller/products?size=${size}&page=${page}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -99,12 +99,13 @@ export default function Index() {
   const { state } = useNavigation();
   const navigate = useNavigate();
   const table_title = [
-    { title: "상품번호", width: "10%" },
+    { title: "상품번호", width: "5%" },
     { title: "대표이미지", width: "15%" },
     { title: "상품명", width: "20%" },
-    { title: "판매 가격", width: "10%" },
     { title: "재고 수", width: "10%" },
-    { title: "브랜드", width: "15%" },
+    { title: "판매 가격", width: "10%" },
+    // { title: "브랜드", width: "10%" },
+    { title: "상태", width: "10%" },
     { title: "등록일", width: "10%" },
     { title: "도매업", width: "10%" },
   ];
@@ -121,12 +122,12 @@ export default function Index() {
   const handleWholesaleAddress = async (e: React.ChangeEvent<HTMLSelectElement>, originProductNo: number) => {
     const target = e.target as HTMLSelectElement;
     const addressBookNo = target.value;
-    const response = await fetch(`http://3.38.116.254:8000/api/seller/product/address/update?originProductNo=${originProductNo}&addressBookNo=${addressBookNo}`, {
+    const response = await fetch(`http://127.0.0.1:8000/api/seller/product/address/update?originProductNo=${originProductNo}&addressBookNo=${addressBookNo}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-      mode: "cors",
+      mode: "no-cors",
     });
 
     console.log(response);
@@ -147,7 +148,7 @@ export default function Index() {
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               {table_title.map((t, i) => (
-                <th key={i} scope="col" className="px-6 py-3 whitespace-nowrap text-center" style={{ width: t.width }}>
+                <th key={i} scope="col" className="px-4 py-3 whitespace-nowrap" style={{ width: t.width }}>
                   {t.title}
                 </th>
               ))}
@@ -179,17 +180,32 @@ export default function Index() {
             ) : (
               <>
                 {products.contents.map((product: Product) => (
-                  <tr key={product.channelProducts[0].originProductNo} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 ">
-                    <th scope="row" className="px-4 py-3 text-xs text-gray-900 whitespace-nowrap dark:text-white">
+                  <tr
+                    key={product.channelProducts[0].originProductNo}
+                    className={`odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 ${
+                      product.channelProducts[0].statusType !== `SALE` ? `text-red-500` : ``
+                    }`}
+                  >
+                    <th scope="row" className="px-4 py-3 text-xs whitespace-nowrap ">
                       {product.channelProducts[0].originProductNo}
                     </th>
                     <td className="px-4 py-3">
                       <img src={product.channelProducts[0].representativeImage.url} alt={product.channelProducts[0].name} className={"w-24 rounded-md shadow-xl"} loading="lazy" />
                     </td>
                     <td className="px-4 py-3 text-sm">{product.channelProducts[0].name}</td>
-                    <td className="px-4 py-3">{product.channelProducts[0].salePrice}</td>
                     <td className="px-4 py-3">{product.channelProducts[0].stockQuantity}</td>
-                    <td className="px-4 py-3">{product.channelProducts[0].brandName}</td>
+                    <td className="px-4 py-3">{product.channelProducts[0].salePrice}</td>
+                    {/* <td className="px-4 py-3">{product.channelProducts[0].brandName}</td> */}
+                    <td className={`px-4 py-3 `}>
+                      {product.channelProducts[0].statusType === "WAIT" && "판매 대기"}
+                      {product.channelProducts[0].statusType === "SALE" && "판매 중"}
+                      {product.channelProducts[0].statusType === "OUTOFSTOCK" && "품절"}
+                      {product.channelProducts[0].statusType === "UNADMISSION" && "승인 대기"}
+                      {product.channelProducts[0].statusType === "REJECTION" && "승인 거부"}
+                      {product.channelProducts[0].statusType === "SUSPENSION" && "판매 중지"}
+                      {product.channelProducts[0].statusType === "CLOSE" && "판매 종료"}
+                      {product.channelProducts[0].statusType === "PROHIBITION" && "판매 금지"}
+                    </td>
                     <td className="px-4 py-3 whitespace-nowrap">{new Date(product.channelProducts[0].regDate).toISOString().split("T")[0]}</td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <select
