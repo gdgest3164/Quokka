@@ -127,7 +127,7 @@ export default function Index() {
       headers: {
         "Content-Type": "application/json",
       },
-      mode: "no-cors",
+      mode: "cors",
     });
 
     console.log(response);
