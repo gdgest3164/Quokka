@@ -72,8 +72,8 @@ interface ProductsResponse {
   address: ProductAddress[];
 }
 
-export const meta: MetaFunction = () => {
-  return [{ title: "New Remix App" }, { name: "description", content: "Welcome to Remix!" }];
+export const meta: MetaFunction = ({ error }) => {
+  return [{ title: error ? "oops!" : "상품목록 | 쿼카" }];
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
