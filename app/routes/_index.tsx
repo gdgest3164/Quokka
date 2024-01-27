@@ -133,7 +133,7 @@ export default function Index() {
                   key={product.channelProducts[0].originProductNo}
                   className={`odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 ${
                     product.channelProducts[0].statusType !== `SALE` ? `text-red-500` : ``
-                  }`}
+                  } hover:bg-slate-100 dark:hover:bg-slate-700 transition duration-300 ease-in-out cursor-pointer`}
                 >
                   <th scope="row" className="px-4 py-3 text-xs whitespace-nowrap ">
                     {product.channelProducts[0].originProductNo}
