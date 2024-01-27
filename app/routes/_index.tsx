@@ -136,7 +136,7 @@ export default function Index() {
                   </td>
                   <td className="px-4 py-3 text-sm">{product.channelProducts[0].name}</td>
                   <td className="px-4 py-3">{product.channelProducts[0].stockQuantity}</td>
-                  <td className="px-4 py-3">{product.channelProducts[0].salePrice}</td>
+                  <td className="px-4 py-3">{product.channelProducts[0].mobileDiscountedPrice}</td>
                   {/* <td className="px-4 py-3">{product.channelProducts[0].brandName}</td> */}
                   <td className={`px-4 py-3 `}>
                     {product.channelProducts[0].statusType === "WAIT" && "판매 대기"}
