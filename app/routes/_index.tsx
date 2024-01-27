@@ -4,6 +4,7 @@ import Switcher from "../Components/Switcher";
 import Navigation from "../Components/Table/nav";
 import { Product, ProductAddress, ProductsResponse } from "../Components/Product/product.type";
 import Table from "../Components/Table/table";
+import Sidebar from "../Components/layout/sidebar";
 
 export const meta: MetaFunction = ({ error }) => {
   return [{ title: error ? "oops!" : "상품목록 | 쿼카" }];
@@ -80,103 +81,101 @@ export default function Index() {
 
   return (
     <>
-      <div className="w-9/12 m-auto flex p-8 relative justify-center items-center">
-        <div className="flex justify-evenly items-center gap-2">
-          <div></div>
-          <img src={products.brand.representativeImageUrl} alt={products.brand.name} className="w-10 h-10" />
-          {products.brand.name}
+      <Sidebar brand={products.brand} />
+      <div className="p-4 sm:ml-64">
+        <div className="w-9/12 m-auto flex p-8 relative items-center justify-center">
+          <Switcher />
         </div>
-        <Switcher />
-      </div>
-      <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-9/12 m-auto">
-        <div>총 {products.totalElements || 0}개</div>
-        <Table
-          table_title={table_title}
-          state={state}
-          loading={
-            <>
-              {Array.from({ length: products.size }, (_, i) => (
-                <tr key={i} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 ">
-                  {table_title.map((t, j) => (
-                    <td key={j} className="px-4 py-3">
-                      <div className="animate-pulse flex space-x-4">
-                        <div className="flex-1 space-y-6 py-1">
-                          <div className="space-y-3">
-                            {t.title == "대표이미지" ? (
-                              <div className="bg-slate-200 dark:bg-slate-500 rounded col-span-2 w-24 h-20"></div>
-                            ) : t.title == "도매업" ? (
-                              <div className="bg-slate-200 dark:bg-slate-500 rounded col-span-2 w-24 h-9"></div>
-                            ) : t.title == "상품명" ? (
-                              <>
+        <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-9/12 m-auto">
+          <div>총 {products.totalElements || 0}개</div>
+          <Table
+            table_title={table_title}
+            state={state}
+            loading={
+              <>
+                {Array.from({ length: products.size }, (_, i) => (
+                  <tr key={i} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 ">
+                    {table_title.map((t, j) => (
+                      <td key={j} className="px-4 py-3">
+                        <div className="animate-pulse flex space-x-4">
+                          <div className="flex-1 space-y-6 py-1">
+                            <div className="space-y-3">
+                              {t.title == "대표이미지" ? (
+                                <div className="bg-slate-200 dark:bg-slate-500 rounded col-span-2 w-24 h-20"></div>
+                              ) : t.title == "도매업" ? (
+                                <div className="bg-slate-200 dark:bg-slate-500 rounded col-span-2 w-24 h-9"></div>
+                              ) : t.title == "상품명" ? (
+                                <>
+                                  <div className="h-2 bg-slate-200 dark:bg-slate-500 rounded col-span-2 "></div>
+                                  <div className="grid grid-cols-3 gap-4">
+                                    <div className="h-2 bg-slate-200 dark:bg-slate-500 rounded col-span-2"></div>
+                                    <div className="h-2 bg-slate-200 dark:bg-slate-500 rounded col-span-1"></div>
+                                  </div>
+                                </>
+                              ) : (
                                 <div className="h-2 bg-slate-200 dark:bg-slate-500 rounded col-span-2 "></div>
-                                <div className="grid grid-cols-3 gap-4">
-                                  <div className="h-2 bg-slate-200 dark:bg-slate-500 rounded col-span-2"></div>
-                                  <div className="h-2 bg-slate-200 dark:bg-slate-500 rounded col-span-1"></div>
-                                </div>
-                              </>
-                            ) : (
-                              <div className="h-2 bg-slate-200 dark:bg-slate-500 rounded col-span-2 "></div>
-                            )}
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </>
+            }
+            data={
+              <>
+                {products.contents.map((product: Product) => (
+                  <tr
+                    key={product.channelProducts[0].originProductNo}
+                    className={`odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 ${
+                      product.channelProducts[0].statusType !== `SALE` ? `text-red-500` : ``
+                    } hover:bg-slate-100 dark:hover:bg-slate-700 transition duration-300 ease-in-out cursor-pointer`}
+                  >
+                    <th scope="row" className="px-4 py-3 text-xs whitespace-nowrap ">
+                      {product.channelProducts[0].originProductNo}
+                    </th>
+                    <td className="px-4 py-3">
+                      <img src={product.channelProducts[0].representativeImage.url} alt={product.channelProducts[0].name} className={"w-24 rounded-md shadow-xl"} loading="lazy" />
                     </td>
-                  ))}
-                </tr>
-              ))}
-            </>
-          }
-          data={
-            <>
-              {products.contents.map((product: Product) => (
-                <tr
-                  key={product.channelProducts[0].originProductNo}
-                  className={`odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 ${
-                    product.channelProducts[0].statusType !== `SALE` ? `text-red-500` : ``
-                  } hover:bg-slate-100 dark:hover:bg-slate-700 transition duration-300 ease-in-out cursor-pointer`}
-                >
-                  <th scope="row" className="px-4 py-3 text-xs whitespace-nowrap ">
-                    {product.channelProducts[0].originProductNo}
-                  </th>
-                  <td className="px-4 py-3">
-                    <img src={product.channelProducts[0].representativeImage.url} alt={product.channelProducts[0].name} className={"w-24 rounded-md shadow-xl"} loading="lazy" />
-                  </td>
-                  <td className="px-4 py-3 text-sm">{product.channelProducts[0].name}</td>
-                  <td className="px-4 py-3">{product.channelProducts[0].stockQuantity}</td>
-                  <td className="px-4 py-3">{product.channelProducts[0].mobileDiscountedPrice}</td>
-                  {/* <td className="px-4 py-3">{product.channelProducts[0].brandName}</td> */}
-                  <td className={`px-4 py-3 `}>
-                    {product.channelProducts[0].statusType === "WAIT" && "판매 대기"}
-                    {product.channelProducts[0].statusType === "SALE" && "판매 중"}
-                    {product.channelProducts[0].statusType === "OUTOFSTOCK" && "품절"}
-                    {product.channelProducts[0].statusType === "UNADMISSION" && "승인 대기"}
-                    {product.channelProducts[0].statusType === "REJECTION" && "승인 거부"}
-                    {product.channelProducts[0].statusType === "SUSPENSION" && "판매 중지"}
-                    {product.channelProducts[0].statusType === "CLOSE" && "판매 종료"}
-                    {product.channelProducts[0].statusType === "PROHIBITION" && "판매 금지"}
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap">{new Date(product.channelProducts[0].regDate).toISOString().split("T")[0]}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <select
-                      id="countries"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      onChange={(e) => handleWholesaleAddress(e, product.originProductNo)}
-                      defaultValue={product.channelProducts[0].details && product.channelProducts[0].details.length > 0 ? product.channelProducts[0].details[0].addressBookNo : "없음"}
-                    >
-                      <option value={""}>없음</option>
-                      {products.address["addressBooks"].map((prd_addr: ProductAddress) => (
-                        <option key={prd_addr.addressBookNo} value={prd_addr.addressBookNo}>
-                          {prd_addr.name}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                </tr>
-              ))}
-            </>
-          }
-        />
-        <Navigation products={products} handleNavigation={handleNavigation} />
+                    <td className="px-4 py-3 text-sm">{product.channelProducts[0].name}</td>
+                    <td className="px-4 py-3">{product.channelProducts[0].stockQuantity}</td>
+                    <td className="px-4 py-3">{product.channelProducts[0].mobileDiscountedPrice}</td>
+                    {/* <td className="px-4 py-3">{product.channelProducts[0].brandName}</td> */}
+                    <td className={`px-4 py-3 `}>
+                      {product.channelProducts[0].statusType === "WAIT" && "판매 대기"}
+                      {product.channelProducts[0].statusType === "SALE" && "판매 중"}
+                      {product.channelProducts[0].statusType === "OUTOFSTOCK" && "품절"}
+                      {product.channelProducts[0].statusType === "UNADMISSION" && "승인 대기"}
+                      {product.channelProducts[0].statusType === "REJECTION" && "승인 거부"}
+                      {product.channelProducts[0].statusType === "SUSPENSION" && "판매 중지"}
+                      {product.channelProducts[0].statusType === "CLOSE" && "판매 종료"}
+                      {product.channelProducts[0].statusType === "PROHIBITION" && "판매 금지"}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">{new Date(product.channelProducts[0].regDate).toISOString().split("T")[0]}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <select
+                        id="countries"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        onChange={(e) => handleWholesaleAddress(e, product.originProductNo)}
+                        defaultValue={product.channelProducts[0].details && product.channelProducts[0].details.length > 0 ? product.channelProducts[0].details[0].addressBookNo : "없음"}
+                      >
+                        <option value={""}>없음</option>
+                        {products.address["addressBooks"].map((prd_addr: ProductAddress) => (
+                          <option key={prd_addr.addressBookNo} value={prd_addr.addressBookNo}>
+                            {prd_addr.name}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                  </tr>
+                ))}
+              </>
+            }
+          />
+          <Navigation products={products} handleNavigation={handleNavigation} />
+        </div>
       </div>
     </>
   );
