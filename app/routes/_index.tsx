@@ -16,7 +16,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const size: number = parseInt(searchParams.get("size") as string) || 10;
   const page: number = parseInt(searchParams.get("page") as string) || 1;
 
-  const response = await fetch(`http://quokka.run:8000/api/seller/products?size=${size}&page=${page}`, {
+  const response = await fetch(`http://http://quokka.run/:8000/api/seller/products?size=${size}&page=${page}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -29,6 +29,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function Index() {
   const { products } = useLoaderData<typeof loader>();
+  console.log(products);
   const { state } = useNavigation();
   const navigate = useNavigate();
 
@@ -61,7 +62,7 @@ export default function Index() {
   const handleWholesaleAddress = async (e: React.ChangeEvent<HTMLSelectElement>, originProductNo: number) => {
     const target = e.target as HTMLSelectElement;
     const addressBookNo = target.value;
-    const response = await fetch(`http://quokka.run:8000/api/seller/product/address/update?originProductNo=${originProductNo}&addressBookNo=${addressBookNo}`, {
+    const response = await fetch(`http://http://quokka.run/:8000/api/seller/product/address/update?originProductNo=${originProductNo}&addressBookNo=${addressBookNo}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -80,7 +81,14 @@ export default function Index() {
 
   return (
     <>
-      <Switcher />
+      <div className="w-9/12 m-auto flex p-8 relative justify-center items-center">
+        <div className="flex justify-evenly items-center gap-2">
+          <div></div>
+          <img src={products.brand.representativeImageUrl} alt={products.brand.name} className="w-10 h-10" />
+          {products.brand.name}
+        </div>
+        <Switcher />
+      </div>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-9/12 m-auto">
         <div>총 {products.totalElements || 0}개</div>
         <Table
