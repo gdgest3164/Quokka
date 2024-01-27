@@ -13,7 +13,7 @@ export default function Switcher() {
 
   return (
     <>
-      <DarkModeSwitch checked={darkSide} onChange={toggleDarkMode} size={30} />
+      <DarkModeSwitch checked={darkSide} onChange={toggleDarkMode} size={20} />
     </>
   );
 }
