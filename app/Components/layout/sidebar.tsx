@@ -1,3 +1,5 @@
+import Switcher from "../Switcher";
+
 interface SidebarProps {
   brand: {
     name: string;
@@ -10,10 +12,13 @@ const Sidebar: React.FC<SidebarProps> = ({ brand }: SidebarProps) => {
     <>
       <aside id="logo-sidebar" className="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
         <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
-          <a href="https://flowbite.com/" className="flex items-center ps-2.5 mb-5">
-            <img src={brand.representativeImageUrl} className="w-10 h-10 rounded-full mr-3" alt={brand.name} />
-            <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">{brand.name}</span>
-          </a>
+          <div className="flex justify-between items-center mb-5">
+            <a href={"//quokka-seven.vercel.app"} className="flex items-center">
+              <img src={brand.representativeImageUrl} className="w-10 h-10 rounded-full mr-3" alt={brand.name} />
+              <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">{brand.name}</span>
+            </a>
+            <Switcher />
+          </div>
           <ul className="space-y-2 font-medium">
             <li>
               <button className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
