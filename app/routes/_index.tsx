@@ -3,8 +3,8 @@ import { useLoaderData, useNavigate, useNavigation } from "@remix-run/react";
 import Navigation from "../Components/Table/nav";
 import { Product, ProductAddress, ProductsResponse } from "../Components/Product/product.type";
 import Table from "../Components/Table/table";
-import Sidebar from "../Components/layout/Sidebar";
-import Component from "../Components/layout/Component";
+import Sidebar from "../Components/layout/sidebar";
+import Component from "../Components/layout/component";
 
 export const meta: MetaFunction = ({ error }) => {
   return [{ title: error ? "oops!" : "상품목록 | 쿼카" }];
