@@ -7,7 +7,7 @@ interface SidebarProps {
   };
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ brand }: SidebarProps) => {
+export default function Sidebar({ brand }: SidebarProps) {
   return (
     <>
       <aside id="logo-sidebar" className="fixed top-0 left-0 z-40 w-52 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
@@ -98,5 +98,4 @@ const Sidebar: React.FC<SidebarProps> = ({ brand }: SidebarProps) => {
       </aside>
     </>
   );
-};
-export default Sidebar;
+}
