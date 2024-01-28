@@ -4,6 +4,8 @@ import Navigation from "../Components/Table/nav";
 import { Product, ProductAddress, ProductsResponse } from "../Components/Product/product.type";
 import Table from "../Components/Table/table";
 import Component from "../Components/Layouts/component";
+import StockModal from "../Components/Modals/StockModal";
+import { useState } from "react";
 
 export const meta: MetaFunction = ({ error }) => {
   return [{ title: error ? "oops!" : "상품목록 | 쿼카" }];
@@ -28,6 +30,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function ProductList() {
+  const [stockModalOpen, setStockModalOpen] = useState(false);
   const { products } = useLoaderData<typeof loader>();
   const { state } = useNavigation();
   const navigate = useNavigate();
@@ -78,10 +81,36 @@ export default function ProductList() {
     // }
   };
 
+  //스톡 모달 오픈 이벤트
+  const stockHandleOpenModal = () => {
+    setStockModalOpen(true);
+  };
+
   return (
     <>
       <Component>
-        <div>총 {products.totalElements || 0}개</div>
+        <div className="flex justify-between items-center">
+          <div>총 {products.totalElements || 0}개</div>
+          <button
+            onClick={stockHandleOpenModal}
+            type="button"
+            className="text-black dark:text-white text-sm bg-[#e0e0e0] dark:bg-[#343a42] hover:bg-[#b8b8b8]/90 hover:dark:bg-[#24292F]/90 focus:ring-4 focus:outline-none focus:ring-[#aaaaaa]/50 font-medium rounded-lg px-3 py-2 text-center inline-flex items-center dark:focus:ring-gray-500 dark:hover:bg-[#050708]/30 me-2 mb-2"
+          >
+            <svg className="w-6 h-6 me-2 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M21 13v-2a1 1 0 0 0-1-1h-.8l-.7-1.7.6-.5a1 1 0 0 0 0-1.5L17.7 5a1 1 0 0 0-1.5 0l-.5.6-1.7-.7V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v.8l-1.7.7-.5-.6a1 1 0 0 0-1.5 0L5 6.3a1 1 0 0 0 0 1.5l.6.5-.7 1.7H4a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h.8l.7 1.7-.6.5a1 1 0 0 0 0 1.5L6.3 19a1 1 0 0 0 1.5 0l.5-.6 1.7.7v.8a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-.8l1.7-.7.5.6a1 1 0 0 0 1.5 0l1.4-1.4a1 1 0 0 0 0-1.5l-.6-.5.7-1.7h.8a1 1 0 0 0 1-1Z"
+              />
+              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+            </svg>
+            재고수 체크
+          </button>
+        </div>
+        <StockModal get_open={stockModalOpen} setOpen={setStockModalOpen} />
+
         <Table
           table_title={table_title}
           state={state}
