@@ -1,176 +1,111 @@
-import { json, type LoaderFunction, type MetaFunction } from "@remix-run/node";
-import { useLoaderData, useNavigate, useNavigation } from "@remix-run/react";
-import Navigation from "../Components/Table/nav";
-import { Product, ProductAddress, ProductsResponse } from "../Components/Product/product.type";
-import Table from "../Components/Table/table";
-import Sidebar from "../Components/Layouts/sidebar";
+import { type MetaFunction } from "@remix-run/node";
 import Component from "../Components/Layouts/component";
 
 export const meta: MetaFunction = ({ error }) => {
-  return [{ title: error ? "oops!" : "상품목록 | 쿼카" }];
-};
-
-export const loader: LoaderFunction = async ({ request }) => {
-  const { searchParams } = new URL(request.url);
-
-  // 기본값 설정
-  const size: number = parseInt(searchParams.get("size") as string) || 10;
-  const page: number = parseInt(searchParams.get("page") as string) || 1;
-
-  const response = await fetch(`http://quokka.run:8000/api/seller/products?size=${size}&page=${page}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  const products: ProductsResponse = await response.json();
-  return json({ products });
+  return [{ title: error ? "oops!" : "대시보드 | 쿼카" }];
 };
 
 export default function Index() {
-  const { products } = useLoaderData<typeof loader>();
-  const { state } = useNavigation();
-  const navigate = useNavigate();
-
-  const table_title = [
-    { title: "상품번호", width: "8%" },
-    { title: "대표이미지", width: "15%" },
-    { title: "상품명", width: "20%" },
-    { title: "재고 수", width: "10%" },
-    { title: "판매 가격", width: "10%" },
-    { title: "상태", width: "10%" },
-    { title: "등록일", width: "10%" },
-    { title: "도매업", width: "10%" },
-  ];
-
-  //페이네이션 이벤트
-  const handleNavigation = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const target = e.target as HTMLButtonElement;
-    let page = 1;
-
-    if (target.getAttribute("data-nav-operation") !== "first") {
-      const isForwardRequest = target.getAttribute("data-nav-operation") === "next";
-      const offset = isForwardRequest ? 1 : -1;
-      page = products.page + offset;
-    }
-
-    navigate(`?size=${products.size}&page=${page}`);
-  };
-
-  //도매업 주소 선택 이벤트
-  const handleWholesaleAddress = async (e: React.ChangeEvent<HTMLSelectElement>, originProductNo: number) => {
-    const target = e.target as HTMLSelectElement;
-    const addressBookNo = target.value;
-    const response = await fetch(`http://quokka.run:8000/api/seller/product/address/update?originProductNo=${originProductNo}&addressBookNo=${addressBookNo}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      mode: "no-cors",
-    });
-
-    console.log(response);
-    // if (response.ok) {
-    //   const products = await response.json();
-    //   return json({ products });
-    // } else {
-    //   throw new Error("서버에서 응답이 없습니다.");
-    // }
-  };
-
   return (
     <>
-      <Sidebar brand={products.brand} />
       <Component>
-        <div>총 {products.totalElements || 0}개</div>
-        <Table
-          table_title={table_title}
-          state={state}
-          loading={
-            <>
-              {Array.from({ length: products.size }, (_, i) => (
-                <tr key={i} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 ">
-                  {table_title.map((t, j) => (
-                    <td key={j} className="px-4 py-3">
-                      <div className="animate-pulse flex space-x-4">
-                        <div className="flex-1 space-y-6 py-1">
-                          <div className="space-y-3">
-                            {t.title == "대표이미지" ? (
-                              <div className="bg-slate-200 dark:bg-slate-500 rounded col-span-2 w-24 h-20"></div>
-                            ) : t.title == "도매업" ? (
-                              <div className="bg-slate-200 dark:bg-slate-500 rounded col-span-2 w-24 h-9"></div>
-                            ) : t.title == "상품명" ? (
-                              <>
-                                <div className="h-2 bg-slate-200 dark:bg-slate-500 rounded col-span-2 "></div>
-                                <div className="grid grid-cols-3 gap-4">
-                                  <div className="h-2 bg-slate-200 dark:bg-slate-500 rounded col-span-2"></div>
-                                  <div className="h-2 bg-slate-200 dark:bg-slate-500 rounded col-span-1"></div>
-                                </div>
-                              </>
-                            ) : (
-                              <div className="h-2 bg-slate-200 dark:bg-slate-500 rounded col-span-2 "></div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </>
-          }
-          data={
-            <>
-              {products.contents.map((product: Product) => (
-                <tr
-                  key={product.channelProducts[0].originProductNo}
-                  className={`odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 ${
-                    product.channelProducts[0].statusType !== `SALE` ? `text-red-500` : ``
-                  } hover:bg-slate-100 dark:hover:bg-slate-700 transition duration-300 ease-in-out cursor-pointer`}
-                >
-                  <th scope="row" className="px-4 py-3 text-xs whitespace-nowrap ">
-                    {product.channelProducts[0].originProductNo}
-                  </th>
-                  <td className="px-4 py-3">
-                    <img src={product.channelProducts[0].representativeImage.url} alt={product.channelProducts[0].name} className={"w-24 rounded-md shadow-xl"} loading="lazy" />
-                  </td>
-                  <td className="px-4 py-3 text-sm">{product.channelProducts[0].name}</td>
-                  <td className="px-4 py-3">{product.channelProducts[0].stockQuantity}</td>
-                  <td className="px-4 py-3">{product.channelProducts[0].mobileDiscountedPrice}</td>
-                  {/* <td className="px-4 py-3">{product.channelProducts[0].brandName}</td> */}
-                  <td className={`px-4 py-3 `}>
-                    {product.channelProducts[0].statusType === "WAIT" && "판매 대기"}
-                    {product.channelProducts[0].statusType === "SALE" && "판매 중"}
-                    {product.channelProducts[0].statusType === "OUTOFSTOCK" && "품절"}
-                    {product.channelProducts[0].statusType === "UNADMISSION" && "승인 대기"}
-                    {product.channelProducts[0].statusType === "REJECTION" && "승인 거부"}
-                    {product.channelProducts[0].statusType === "SUSPENSION" && "판매 중지"}
-                    {product.channelProducts[0].statusType === "CLOSE" && "판매 종료"}
-                    {product.channelProducts[0].statusType === "PROHIBITION" && "판매 금지"}
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap">{new Date(product.channelProducts[0].regDate).toISOString().split("T")[0]}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <select
-                      id="countries"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      onChange={(e) => handleWholesaleAddress(e, product.originProductNo)}
-                      defaultValue={product.channelProducts[0].details && product.channelProducts[0].details.length > 0 ? product.channelProducts[0].details[0].addressBookNo : "없음"}
-                    >
-                      <option value={""}>없음</option>
-                      {products.address["addressBooks"].map((prd_addr: ProductAddress) => (
-                        <option key={prd_addr.addressBookNo} value={prd_addr.addressBookNo}>
-                          {prd_addr.name}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                </tr>
-              ))}
-            </>
-          }
-        />
-        <Navigation products={products} handleNavigation={handleNavigation} />
+        <div className="grid grid-cols-3 gap-4 mb-4">
+          <div className="flex items-center justify-center h-24 rounded bg-gray-50 dark:bg-gray-800">
+            <p className="text-2xl text-gray-400 dark:text-gray-500">
+              <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
+              </svg>
+            </p>
+          </div>
+          <div className="flex items-center justify-center h-24 rounded bg-gray-50 dark:bg-gray-800">
+            <p className="text-2xl text-gray-400 dark:text-gray-500">
+              <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
+              </svg>
+            </p>
+          </div>
+          <div className="flex items-center justify-center h-24 rounded bg-gray-50 dark:bg-gray-800">
+            <p className="text-2xl text-gray-400 dark:text-gray-500">
+              <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
+              </svg>
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center justify-center h-48 mb-4 rounded bg-gray-50 dark:bg-gray-800">
+          <p className="text-2xl text-gray-400 dark:text-gray-500">
+            <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
+            </svg>
+          </p>
+        </div>
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
+            <p className="text-2xl text-gray-400 dark:text-gray-500">
+              <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
+              </svg>
+            </p>
+          </div>
+          <div className="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
+            <p className="text-2xl text-gray-400 dark:text-gray-500">
+              <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
+              </svg>
+            </p>
+          </div>
+          <div className="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
+            <p className="text-2xl text-gray-400 dark:text-gray-500">
+              <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
+              </svg>
+            </p>
+          </div>
+          <div className="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
+            <p className="text-2xl text-gray-400 dark:text-gray-500">
+              <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
+              </svg>
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center justify-center h-48 mb-4 rounded bg-gray-50 dark:bg-gray-800">
+          <p className="text-2xl text-gray-400 dark:text-gray-500">
+            <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
+            </svg>
+          </p>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
+            <p className="text-2xl text-gray-400 dark:text-gray-500">
+              <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
+              </svg>
+            </p>
+          </div>
+          <div className="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
+            <p className="text-2xl text-gray-400 dark:text-gray-500">
+              <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
+              </svg>
+            </p>
+          </div>
+          <div className="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
+            <p className="text-2xl text-gray-400 dark:text-gray-500">
+              <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
+              </svg>
+            </p>
+          </div>
+          <div className="flex items-center justify-center rounded bg-gray-50 h-28 dark:bg-gray-800">
+            <p className="text-2xl text-gray-400 dark:text-gray-500">
+              <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
+              </svg>
+            </p>
+          </div>
+        </div>
       </Component>
     </>
   );

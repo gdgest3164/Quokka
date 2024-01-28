@@ -6,6 +6,7 @@ import { NonFlashOfWrongThemeEls, Theme, ThemeProvider, useTheme } from "./utils
 import { getThemeSession } from "./utils/theme.server";
 
 import styles from "./tailwind.css";
+import Sidebar, { SidebarProps } from "./Components/Layouts/sidebar";
 
 export const meta: MetaFunction = () => {
   const title = "쿼카 재고관리";
@@ -25,13 +26,24 @@ export function links() {
 
 export type LoaderData = {
   theme: Theme | null;
+  brand: SidebarProps;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
   const themeSession = await getThemeSession(request);
 
+  const response = await fetch(`http://quokka.run:8000/api/seller/brand`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  const responseData = await response.json();
+
   const data: LoaderData = {
     theme: themeSession.getTheme(),
+    brand: responseData,
   };
 
   return data;
@@ -52,6 +64,7 @@ function App() {
         <NonFlashOfWrongThemeEls ssrTheme={Boolean(data.theme)} />
       </head>
       <body>
+        <Sidebar {...data.brand} />
         <Outlet />
         <ScrollRestoration />
         <Scripts />
