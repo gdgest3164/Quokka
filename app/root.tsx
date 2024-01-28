@@ -47,10 +47,11 @@ export const loader: LoaderFunction = async ({ request }) => {
       theme: themeSession.getTheme(),
       brand: responseData,
     };
-    session.set("brand_info", responseData);
-    const cookie = await commitSession(session, { domain: "localhost", path: "/" });
 
-    json(
+    session.set("brand_info", data);
+    const cookie = await commitSession(session);
+
+    return json(
       { brand_info },
       {
         headers: {
@@ -60,9 +61,9 @@ export const loader: LoaderFunction = async ({ request }) => {
     );
 
     // document.cookie = `brand=${JSON.stringify(data.brand)}`;
-    return data;
+    // return data;
   } else {
-    return brand_info;
+    return json(brand_info);
   }
 };
 
