@@ -55,7 +55,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       { brand_info },
       {
         headers: {
-          "Set-Cookie": cookie,
+          "Set-Cookie": await cookie,
         },
       }
     );
@@ -69,7 +69,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 function App() {
   const data = useLoaderData<LoaderData>();
-
   const [theme] = useTheme();
 
   return (
