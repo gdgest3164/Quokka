@@ -32,7 +32,7 @@ export type LoaderData = {
 export const loader: LoaderFunction = async ({ request }) => {
   const themeSession = await getThemeSession(request);
 
-  const response = await fetch(`http://quokka.run:8000/api/seller/brand`, {
+  const response = await fetch(`http://quokka.run:8000/api/seller/brand?channelNo=${"100987434"}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
