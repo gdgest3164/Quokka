@@ -189,7 +189,7 @@ export default function ProductList() {
                       defaultValue={product.channelProducts[0].details && product.channelProducts[0].details.length > 0 ? product.channelProducts[0].details[0].addressBookNo : "없음"}
                     >
                       <option value={""}>없음</option>
-                      {products.address["addressBooks"].map((prd_addr: ProductAddress) => (
+                      {products.address.map((prd_addr: ProductAddress) => (
                         <option key={prd_addr.addressBookNo} value={prd_addr.addressBookNo}>
                           {prd_addr.name}
                         </option>
