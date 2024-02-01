@@ -18,7 +18,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const size: number = parseInt(searchParams.get("size") as string) || 10;
   const page: number = parseInt(searchParams.get("page") as string) || 1;
 
-  const response = await fetch(`http://127.0.0.1:8000/api/seller/products?size=${size}&page=${page}`, {
+  const response = await fetch(`http://quokka.run:8000/api/seller/products?size=${size}&page=${page}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -69,7 +69,7 @@ export default function ProductList() {
   const handleWholesaleAddress = async (e: React.ChangeEvent<HTMLSelectElement>, originProductNo: number) => {
     const target = e.target as HTMLSelectElement;
     const addressBookNo = target.value;
-    const response = await fetch(`http://127.0.0.1:8000/api/seller/product/address/update?originProductNo=${originProductNo}&addressBookNo=${addressBookNo}`, {
+    const response = await fetch(`http://quokka.run:8000/api/seller/product/address/update?originProductNo=${originProductNo}&addressBookNo=${addressBookNo}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
