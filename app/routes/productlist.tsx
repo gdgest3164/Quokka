@@ -5,7 +5,7 @@ import { Product, ProductAddress, ProductsResponse } from "../Components/Product
 import Table from "../Components/Table/table";
 import Component from "../Components/Layouts/component";
 import StockModal from "../Components/Modals/StockModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const meta: MetaFunction = ({ error }) => {
   return [{ title: error ? "oops!" : "상품목록 | 쿼카" }];
@@ -18,7 +18,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const size: number = parseInt(searchParams.get("size") as string) || 10;
   const page: number = parseInt(searchParams.get("page") as string) || 1;
 
-  const response = await fetch(`http://quokka.run:8000/api/seller/products?size=${size}&page=${page}`, {
+  const response = await fetch(`http://127.0.0.1:8000/api/seller/products?size=${size}&page=${page}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -32,8 +32,13 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function ProductList() {
   const [stockModalOpen, setStockModalOpen] = useState(false);
   const { products } = useLoaderData<typeof loader>();
+  const [address, setAddress] = useState<ProductAddress[]>([]);
   const { state } = useNavigation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setAddress(products.address);
+  }, [products]);
 
   const table_title = [
     { title: "상품번호", width: "8%" },
@@ -64,7 +69,7 @@ export default function ProductList() {
   const handleWholesaleAddress = async (e: React.ChangeEvent<HTMLSelectElement>, originProductNo: number) => {
     const target = e.target as HTMLSelectElement;
     const addressBookNo = target.value;
-    const response = await fetch(`http://quokka.run:8000/api/seller/product/address/update?originProductNo=${originProductNo}&addressBookNo=${addressBookNo}`, {
+    const response = await fetch(`http://127.0.0.1:8000/api/seller/product/address/update?originProductNo=${originProductNo}&addressBookNo=${addressBookNo}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -106,10 +111,18 @@ export default function ProductList() {
               />
               <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
             </svg>
-            재고수 체크
+            설정
           </button>
         </div>
-        <StockModal get_open={stockModalOpen} setOpen={setStockModalOpen} />
+        <StockModal
+          get_open={stockModalOpen}
+          setOpen={setStockModalOpen}
+          address={address}
+          toggle_id={(e) => {
+            const updatedAddresses = address.map((v: ProductAddress) => (v.addressBookNo === e ? { ...v, is_use: !v.is_use } : v));
+            setAddress(updatedAddresses);
+          }}
+        />
 
         <Table
           table_title={table_title}
@@ -189,11 +202,14 @@ export default function ProductList() {
                       defaultValue={product.channelProducts[0].details && product.channelProducts[0].details.length > 0 ? product.channelProducts[0].details[0].addressBookNo : "없음"}
                     >
                       <option value={""}>없음</option>
-                      {products.address.map((prd_addr: ProductAddress) => (
-                        <option key={prd_addr.addressBookNo} value={prd_addr.addressBookNo}>
-                          {prd_addr.name}
-                        </option>
-                      ))}
+                      {address.map((prd_addr: ProductAddress) => {
+                        if (prd_addr.is_use)
+                          return (
+                            <option key={prd_addr.addressBookNo} value={prd_addr.addressBookNo}>
+                              {prd_addr.name}
+                            </option>
+                          );
+                      })}
                     </select>
                   </td>
                 </tr>

@@ -1,21 +1,26 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { ProductAddress } from "../Product/product.type";
 
 interface StockModalProps {
   get_open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  address: ProductAddress[];
+  toggle_id: (addressBookNo: string | number) => void;
 }
 
-export default function StockModal({ get_open, setOpen }: StockModalProps) {
+export default function StockModal({ get_open, setOpen, address, toggle_id }: StockModalProps) {
   const [open, setOpenState] = useState(get_open || false);
 
   const cancelButtonRef = useRef(null);
 
-  // Use useEffect to update the modal state when the prop changes
   useEffect(() => {
     setOpenState(get_open);
   }, [get_open]);
+
+  const toggleChange = (get_item: ProductAddress) => {
+    toggle_id(get_item.addressBookNo);
+  };
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -38,17 +43,48 @@ export default function StockModal({ get_open, setOpen }: StockModalProps) {
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                 <div className="bg-white dark:bg-gray-800 px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                   <div className="sm:flex sm:items-start">
-                    <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                      <ExclamationTriangleIcon className="h-6 w-6 text-red-600" aria-hidden="true" />
-                    </div>
-                    <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                    <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
                       <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900 dark:text-white">
-                        Deactivate account
+                        설정
                       </Dialog.Title>
+                      <hr className="w-full my-4" />
                       <div className="mt-2">
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          Are you sure you want to deactivate your account? All of your data will be permanently removed. This action cannot be undone.
-                        </p>
+                        <div className="col-span-2">
+                          <p className="text-sm text-gray-500 dark:text-gray-400 flex justify-center items-center">
+                            <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m5 12 4.7 4.5 9.3-9" />
+                            </svg>
+                            도매사이트의 url을 입력해주세요.
+                          </p>
+
+                          <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                            <tbody>
+                              {Array.isArray(address) &&
+                                address.map((who: ProductAddress, i: number) => (
+                                  <tr key={i} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                    <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                      <label className="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" value={who.addressBookNo} checked={who.is_use} className="sr-only peer" onChange={() => toggleChange(who)} />
+                                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                        {/* Additional content */}
+                                      </label>
+                                    </th>
+                                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{who.name}</td>
+                                    <td className="px-6 py-4">
+                                      <input
+                                        type="text"
+                                        name="wholesale_url"
+                                        id="wholesale_url"
+                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                        placeholder="도매사이트 주소"
+                                        aria-required={true}
+                                      />
+                                    </td>
+                                  </tr>
+                                ))}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -56,18 +92,11 @@ export default function StockModal({ get_open, setOpen }: StockModalProps) {
                 <div className="bg-gray-50 dark:bg-gray-900 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button
                     type="button"
-                    className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                    onClick={() => setOpen(false)}
-                  >
-                    Deactivate
-                  </button>
-                  <button
-                    type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-gray-800 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-800 hover:bg-gray-50 sm:mt-0 sm:w-auto"
                     onClick={() => setOpen(false)}
                     ref={cancelButtonRef}
                   >
-                    Cancel
+                    닫기
                   </button>
                 </div>
               </Dialog.Panel>
