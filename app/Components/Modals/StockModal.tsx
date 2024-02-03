@@ -6,8 +6,8 @@ interface StockModalProps {
   get_open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   address: ProductAddress[];
-  toggle_id: (addressBookNo: string) => void;
-  input_url: (addressBookNo: string | number, url: string) => void;
+  toggle_id: (addressBookNo: number) => void;
+  input_url: (addressBookNo: number, url: string) => void;
 }
 
 export default function StockModal({ get_open, setOpen, address, toggle_id, input_url }: StockModalProps) {
@@ -32,7 +32,7 @@ export default function StockModal({ get_open, setOpen, address, toggle_id, inpu
 
   //토글 이벤트
   const toggleChange = (get_item: ProductAddress) => {
-    toggle_id(get_item.addressBookNo.toString());
+    toggle_id(get_item.addressBookNo);
   };
 
   //url 입력 이벤트

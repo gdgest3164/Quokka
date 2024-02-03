@@ -6,6 +6,7 @@ import Table from "../Components/Table/table";
 import Component from "../Components/Layouts/component";
 import StockModal from "../Components/Modals/StockModal";
 import { useEffect, useState } from "react";
+import { localAddressUpdate, productAddressUpdate, sellerProducts } from "../api/api";
 
 export const meta: MetaFunction = ({ error }) => {
   return [{ title: error ? "oops!" : "상품목록 | 쿼카" }];
@@ -18,14 +19,9 @@ export const loader: LoaderFunction = async ({ request }) => {
   const size: number = parseInt(searchParams.get("size") as string) || 10;
   const page: number = parseInt(searchParams.get("page") as string) || 1;
 
-  const response = await fetch(`http://quokka.run:8000/api/seller/products?size=${size}&page=${page}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  //상품 리스트 가져오기
+  const products: ProductsResponse = await sellerProducts(size, page);
 
-  const products: ProductsResponse = await response.json();
   return json({ products });
 };
 
@@ -38,7 +34,6 @@ export default function ProductList() {
 
   useEffect(() => {
     setAddress(products.address);
-    console.log(address);
   }, [products]);
 
   const table_title = [
@@ -75,21 +70,11 @@ export default function ProductList() {
       originProductNo: originProductNo,
       addressBookNo: addressBookNo,
     };
-    const response = await fetch(`http://quokka.run:8000/api/seller/product/address/update`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+    const response = await productAddressUpdate(data);
 
-    console.log(response);
-    // if (response.ok) {
-    //   const products = await response.json();
-    //   return json({ products });
-    // } else {
-    //   throw new Error("서버에서 응답이 없습니다.");
-    // }
+    if (!response.ok) {
+      throw new Error("서버에서 응답이 없습니다.");
+    }
   };
 
   //스톡 모달 오픈 이벤트
@@ -98,7 +83,7 @@ export default function ProductList() {
   };
 
   //스톡 모달 url 입력 이벤트
-  const stockModalUrl = async (datas: { addressBookNo: string | number; url: string }) => {
+  const stockModalUrl = async (datas: { addressBookNo: number; url: string }) => {
     const data = {
       addressBookNo: datas.addressBookNo,
       filter: {
@@ -106,43 +91,35 @@ export default function ProductList() {
       },
     };
 
-    const response = await fetch(`http://quokka.run:8000/api/seller/local/address/update`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+    const response = await localAddressUpdate(data);
 
-    if (response.status === 200) {
+    if (response.ok) {
       const updatedAddresses = address.map((v: ProductAddress) => (v.addressBookNo === datas.addressBookNo ? { ...v, url: datas.url } : v));
       setAddress(updatedAddresses);
+    } else {
+      throw new Error("서버에서 응답이 없습니다.");
     }
   };
 
   //스톡 설정 이벤트
-  const stockDataEvent = async (e: string) => {
-    const updatedAddresses = address.map((v: ProductAddress) => (v.addressBookNo === parseInt(e) ? { ...v, is_use: !v.is_use } : v));
+  const stockDataEvent = async (e: number) => {
+    const updatedAddresses = address.map((v: ProductAddress) => (v.addressBookNo === e ? { ...v, is_use: !v.is_use } : v));
     await setAddress(updatedAddresses);
     products.address = address;
 
     const data = {
       addressBookNo: e,
       filter: {
-        is_use: !address.filter((v) => v.addressBookNo === parseInt(e))[0].is_use,
+        is_use: !address.filter((v) => v.addressBookNo === e)[0].is_use,
       },
     };
 
     //데이터 저장
-    const response = await fetch(`http://quokka.run:8000/api/seller/local/address/update`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+    const response = await localAddressUpdate(data);
 
-    console.log(response);
+    if (!response.ok) {
+      throw new Error("서버에서 응답이 없습니다.");
+    }
   };
 
   return (
