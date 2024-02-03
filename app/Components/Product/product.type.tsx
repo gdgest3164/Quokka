@@ -57,7 +57,7 @@ export interface Product {
 export interface ProductAddress {
   map(arg0: (prd_addr: ProductAddress) => void): unknown;
   findIndex(arg0: (prd_addr: ProductAddress) => void): unknown;
-  addressBookNo: string | number;
+  addressBookNo: number;
   name: string;
   addressType: string;
   postalCode: string;

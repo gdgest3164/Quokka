@@ -18,7 +18,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const size: number = parseInt(searchParams.get("size") as string) || 10;
   const page: number = parseInt(searchParams.get("page") as string) || 1;
 
-  const response = await fetch(`http://127.0.0.1:8000/api/seller/products?size=${size}&page=${page}`, {
+  const response = await fetch(`http://quokka.run:8000/api/seller/products?size=${size}&page=${page}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -75,7 +75,7 @@ export default function ProductList() {
       originProductNo: originProductNo,
       addressBookNo: addressBookNo,
     };
-    const response = await fetch(`http://127.0.0.1:8000/api/seller/product/address/update`, {
+    const response = await fetch(`http://quokka.run:8000/api/seller/product/address/update`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -106,7 +106,7 @@ export default function ProductList() {
       },
     };
 
-    const response = await fetch(`http://127.0.0.1:8000/api/seller/local/address/update`, {
+    const response = await fetch(`http://quokka.run:8000/api/seller/local/address/update`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -114,11 +114,10 @@ export default function ProductList() {
       body: JSON.stringify(data),
     });
 
-    console.log(response);
-    // if (response.status === 200) {
-    //   const updatedAddresses = address.map((v: ProductAddress) => (v.addressBookNo === datas.addressBookNo ? { ...v, url: datas.url } : v));
-    //   setAddress(updatedAddresses);
-    // }
+    if (response.status === 200) {
+      const updatedAddresses = address.map((v: ProductAddress) => (v.addressBookNo === datas.addressBookNo ? { ...v, url: datas.url } : v));
+      setAddress(updatedAddresses);
+    }
   };
 
   //스톡 설정 이벤트
@@ -135,7 +134,7 @@ export default function ProductList() {
     };
 
     //데이터 저장
-    const response = await fetch(`http://127.0.0.1:8000/api/seller/local/address/update`, {
+    const response = await fetch(`http://quokka.run:8000/api/seller/local/address/update`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

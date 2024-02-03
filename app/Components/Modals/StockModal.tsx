@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ProductAddress } from "../Product/product.type";
 
@@ -11,14 +11,24 @@ interface StockModalProps {
 }
 
 export default function StockModal({ get_open, setOpen, address, toggle_id, input_url }: StockModalProps) {
-  const [open, setOpenState] = useState(get_open || false);
-  const [isCheckUrl, setIsCheckUrl] = useState<Array<{ url: string; check: boolean }>>(Array(address.length).fill({ url: "", check: true }));
+  const initialUrlState = useMemo(
+    () =>
+      address.map((item) => ({
+        id: item.addressBookNo,
+        url: item.url,
+        check: true,
+      })),
+    [address]
+  );
 
+  const [open, setOpenState] = useState(get_open || false);
+  const [isCheckUrl, setIsCheckUrl] = useState(initialUrlState);
   const cancelButtonRef = useRef(null);
 
   useEffect(() => {
     setOpenState(get_open);
-  }, [get_open]);
+    setIsCheckUrl(initialUrlState);
+  }, [get_open, initialUrlState]);
 
   //토글 이벤트
   const toggleChange = (get_item: ProductAddress) => {
@@ -26,25 +36,25 @@ export default function StockModal({ get_open, setOpen, address, toggle_id, inpu
   };
 
   //url 입력 이벤트
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    setIsCheckUrl((prevIsCheckUrl) => {
-      if (prevIsCheckUrl[index]) {
-        return prevIsCheckUrl.map((item, index2) => (index === index2 ? { ...item, url: e.target.value } : item));
-      }
-      return prevIsCheckUrl;
-    });
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>, index: number, addressBookNo: number) => {
+    const inputValue = e.target.value;
+    addressUpdate(addressBookNo, "url", inputValue);
   };
 
   //url 입력 검사
-  const handleBlur = (e: React.ChangeEvent<HTMLInputElement>, index: number, addressBookNo: string | number) => {
+  const handleBlur = (e: React.ChangeEvent<HTMLInputElement>, index: number, addressBookNo: number) => {
     const isUrl = /^(ftp|http|https):\/\/[^ "]+$/.test(e.target.value);
-    const newIsCheckUrl = [...isCheckUrl];
-    newIsCheckUrl[index] = { ...newIsCheckUrl[index], check: isUrl };
-    setIsCheckUrl(newIsCheckUrl);
-
+    addressUpdate(addressBookNo, "check", isUrl);
     if (isUrl) {
       input_url(addressBookNo, e.target.value);
     }
+  };
+
+  //address 데이터 변경
+  const addressUpdate = (addressBookNo: number, name: string, value: string | number | boolean) => {
+    setIsCheckUrl((prevIsCheckUrl) => {
+      return prevIsCheckUrl.map((item) => (item.id === addressBookNo ? { ...item, [name]: value } : item));
+    });
   };
 
   return (
@@ -98,16 +108,17 @@ export default function StockModal({ get_open, setOpen, address, toggle_id, inpu
                                     <td className="px-6 py-4">
                                       <input
                                         type="text"
-                                        value={who.url || (isCheckUrl[i] && isCheckUrl[i].url)}
+                                        value={(isCheckUrl.find((u) => u.id == who.addressBookNo) || {}).url || ""}
                                         className={`bg-gray-50 border border-gray-300 sm:text-xs text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 ${
-                                          isCheckUrl[i] && !isCheckUrl[i].check && "border-red-500 placeholder-red-500 text-red-500 dark:border-red-500 dark:placeholder-red-500 dark:text-red-500"
+                                          !(isCheckUrl.find((u) => u.id == who.addressBookNo) || {}).check &&
+                                          "border-red-500 placeholder-red-500 text-red-500 dark:border-red-500 dark:placeholder-red-500 dark:text-red-500"
                                         }`}
                                         placeholder={`${who.name} URL`}
                                         aria-required={true}
-                                        onInput={(e) => handleInput(e as React.ChangeEvent<HTMLInputElement>, i)}
+                                        onChange={(e) => handleInput(e as React.ChangeEvent<HTMLInputElement>, i, who.addressBookNo)}
                                         onBlur={(e) => handleBlur(e, i, who.addressBookNo)}
                                       />
-                                      {isCheckUrl[i] && !isCheckUrl[i].check && (
+                                      {!(isCheckUrl.find((u) => u.id == who.addressBookNo) || {}).check && (
                                         <p className="mt-2 text-sm text-red-600 dark:text-red-500">
                                           <span className="font-medium">앗!</span> 잘못된 주소를 입력하셨어요!
                                         </p>
