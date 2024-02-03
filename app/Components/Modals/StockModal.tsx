@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ProductAddress } from "../Product/product.type";
 
@@ -6,11 +6,13 @@ interface StockModalProps {
   get_open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   address: ProductAddress[];
-  toggle_id: (addressBookNo: string | number) => void;
+  toggle_id: (addressBookNo: string) => void;
+  input_url: (addressBookNo: string | number, url: string) => void;
 }
 
-export default function StockModal({ get_open, setOpen, address, toggle_id }: StockModalProps) {
+export default function StockModal({ get_open, setOpen, address, toggle_id, input_url }: StockModalProps) {
   const [open, setOpenState] = useState(get_open || false);
+  const [isCheckUrl, setIsCheckUrl] = useState<Array<{ url: string; check: boolean }>>(Array(address.length).fill({ url: "", check: true }));
 
   const cancelButtonRef = useRef(null);
 
@@ -18,8 +20,31 @@ export default function StockModal({ get_open, setOpen, address, toggle_id }: St
     setOpenState(get_open);
   }, [get_open]);
 
+  //토글 이벤트
   const toggleChange = (get_item: ProductAddress) => {
-    toggle_id(get_item.addressBookNo);
+    toggle_id(get_item.addressBookNo.toString());
+  };
+
+  //url 입력 이벤트
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    setIsCheckUrl((prevIsCheckUrl) => {
+      if (prevIsCheckUrl[index]) {
+        return prevIsCheckUrl.map((item, index2) => (index === index2 ? { ...item, url: e.target.value } : item));
+      }
+      return prevIsCheckUrl;
+    });
+  };
+
+  //url 입력 검사
+  const handleBlur = (e: React.ChangeEvent<HTMLInputElement>, index: number, addressBookNo: string | number) => {
+    const isUrl = /^(ftp|http|https):\/\/[^ "]+$/.test(e.target.value);
+    const newIsCheckUrl = [...isCheckUrl];
+    newIsCheckUrl[index] = { ...newIsCheckUrl[index], check: isUrl };
+    setIsCheckUrl(newIsCheckUrl);
+
+    if (isUrl) {
+      input_url(addressBookNo, e.target.value);
+    }
   };
 
   return (
@@ -73,12 +98,20 @@ export default function StockModal({ get_open, setOpen, address, toggle_id }: St
                                     <td className="px-6 py-4">
                                       <input
                                         type="text"
-                                        name="wholesale_url"
-                                        id="wholesale_url"
-                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                        placeholder="도매사이트 주소"
+                                        value={who.url || (isCheckUrl[i] && isCheckUrl[i].url)}
+                                        className={`bg-gray-50 border border-gray-300 sm:text-xs text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 ${
+                                          isCheckUrl[i] && !isCheckUrl[i].check && "border-red-500 placeholder-red-500 text-red-500 dark:border-red-500 dark:placeholder-red-500 dark:text-red-500"
+                                        }`}
+                                        placeholder={`${who.name} URL`}
                                         aria-required={true}
+                                        onInput={(e) => handleInput(e as React.ChangeEvent<HTMLInputElement>, i)}
+                                        onBlur={(e) => handleBlur(e, i, who.addressBookNo)}
                                       />
+                                      {isCheckUrl[i] && !isCheckUrl[i].check && (
+                                        <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                                          <span className="font-medium">앗!</span> 잘못된 주소를 입력하셨어요!
+                                        </p>
+                                      )}
                                     </td>
                                   </tr>
                                 ))}

@@ -70,6 +70,7 @@ export interface ProductAddress {
   roadNameAddress: boolean;
   overseasAddress: boolean;
   is_use: boolean;
+  url: string;
 }
 export interface ProductsResponse {
   products: Product[];

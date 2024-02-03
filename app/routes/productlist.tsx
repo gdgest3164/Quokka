@@ -18,7 +18,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const size: number = parseInt(searchParams.get("size") as string) || 10;
   const page: number = parseInt(searchParams.get("page") as string) || 1;
 
-  const response = await fetch(`http://quokka.run:8000/api/seller/products?size=${size}&page=${page}`, {
+  const response = await fetch(`http://127.0.0.1:8000/api/seller/products?size=${size}&page=${page}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -38,6 +38,7 @@ export default function ProductList() {
 
   useEffect(() => {
     setAddress(products.address);
+    console.log(address);
   }, [products]);
 
   const table_title = [
@@ -69,12 +70,17 @@ export default function ProductList() {
   const handleWholesaleAddress = async (e: React.ChangeEvent<HTMLSelectElement>, originProductNo: number) => {
     const target = e.target as HTMLSelectElement;
     const addressBookNo = target.value;
-    const response = await fetch(`http://quokka.run:8000/api/seller/product/address/update?originProductNo=${originProductNo}&addressBookNo=${addressBookNo}`, {
-      method: "GET",
+
+    const data = {
+      originProductNo: originProductNo,
+      addressBookNo: addressBookNo,
+    };
+    const response = await fetch(`http://127.0.0.1:8000/api/seller/product/address/update`, {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      mode: "no-cors",
+      body: JSON.stringify(data),
     });
 
     console.log(response);
@@ -89,6 +95,55 @@ export default function ProductList() {
   //스톡 모달 오픈 이벤트
   const stockHandleOpenModal = () => {
     setStockModalOpen(true);
+  };
+
+  //스톡 모달 url 입력 이벤트
+  const stockModalUrl = async (datas: { addressBookNo: string | number; url: string }) => {
+    const data = {
+      addressBookNo: datas.addressBookNo,
+      filter: {
+        url: datas.url,
+      },
+    };
+
+    const response = await fetch(`http://127.0.0.1:8000/api/seller/local/address/update`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    console.log(response);
+    // if (response.status === 200) {
+    //   const updatedAddresses = address.map((v: ProductAddress) => (v.addressBookNo === datas.addressBookNo ? { ...v, url: datas.url } : v));
+    //   setAddress(updatedAddresses);
+    // }
+  };
+
+  //스톡 설정 이벤트
+  const stockDataEvent = async (e: string) => {
+    const updatedAddresses = address.map((v: ProductAddress) => (v.addressBookNo === parseInt(e) ? { ...v, is_use: !v.is_use } : v));
+    await setAddress(updatedAddresses);
+    products.address = address;
+
+    const data = {
+      addressBookNo: e,
+      filter: {
+        is_use: !address.filter((v) => v.addressBookNo === parseInt(e))[0].is_use,
+      },
+    };
+
+    //데이터 저장
+    const response = await fetch(`http://127.0.0.1:8000/api/seller/local/address/update`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    console.log(response);
   };
 
   return (
@@ -114,15 +169,7 @@ export default function ProductList() {
             설정
           </button>
         </div>
-        <StockModal
-          get_open={stockModalOpen}
-          setOpen={setStockModalOpen}
-          address={address}
-          toggle_id={(e) => {
-            const updatedAddresses = address.map((v: ProductAddress) => (v.addressBookNo === e ? { ...v, is_use: !v.is_use } : v));
-            setAddress(updatedAddresses);
-          }}
-        />
+        <StockModal get_open={stockModalOpen} setOpen={setStockModalOpen} address={address} toggle_id={(e) => stockDataEvent(e)} input_url={(i, e) => stockModalUrl({ addressBookNo: i, url: e })} />
 
         <Table
           table_title={table_title}
@@ -199,7 +246,7 @@ export default function ProductList() {
                       id="countries"
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       onChange={(e) => handleWholesaleAddress(e, product.originProductNo)}
-                      defaultValue={product.channelProducts[0].details && product.channelProducts[0].details.length > 0 ? product.channelProducts[0].details[0].addressBookNo : "없음"}
+                      value={product.channelProducts[0].details && product.channelProducts[0].details.length > 0 ? product.channelProducts[0].details[0].addressBookNo : "없음"}
                     >
                       <option value={""}>없음</option>
                       {address.map((prd_addr: ProductAddress) => {
