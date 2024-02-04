@@ -1,5 +1,5 @@
 //API 통신
-const server = "http://quokka.run:8000";
+const server = "https://quokka.run";
 
 //==========================================================
 //셀러 브랜드 정보
