@@ -10,6 +10,8 @@ export interface SidebarProps {
   accountId: string;
   accountUid: string;
   grade: string;
+  created_at: string;
+  update_at: string;
 }
 
 export default function Sidebar(brand: SidebarProps) {

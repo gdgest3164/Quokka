@@ -7,6 +7,7 @@ import { getThemeSession } from "./utils/theme.server";
 
 import styles from "./tailwind.css";
 import Sidebar, { SidebarProps } from "./Components/Layouts/sidebar";
+import { apiSellerBrand } from "./api/api";
 
 export const meta: MetaFunction = () => {
   const title = "쿼카 재고관리";
@@ -30,46 +31,21 @@ export type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  // const session = await getSession(request.headers.get("Cookie"));
-  // const brand_info = session.get("brand_info");
-
-  // if (!brand_info) {
+  //다크모드
   const themeSession = await getThemeSession(request);
-  const response = await fetch(`http://quokka.run:8000/api/seller/brand?channelNo=${"100987434"}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  const responseData = await response.json();
+
+  //셀러 브랜드 정보
+  const responseData = await apiSellerBrand("100987434");
+
   const data: LoaderData = {
     theme: themeSession.getTheme(),
     brand: responseData,
   };
   return data;
-
-  // session.set("brand_info", data);
-  // const cookie = await commitSession(session);
-
-  // return json(
-  //   { brand_info },
-  //   {
-  //     headers: {
-  //       "Set-Cookie": cookie,
-  //     },
-  //   }
-  // );
-
-  // document.cookie = `brand=${JSON.stringify(data.brand)}`;
-  // return data;
-  // } else {
-  //   return json(brand_info);
-  // }
 };
 
 function App() {
   const data = useLoaderData<LoaderData>();
-  // const { state } = useNavigation();
   const [theme] = useTheme();
 
   return (

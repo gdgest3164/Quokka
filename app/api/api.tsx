@@ -1,5 +1,19 @@
 //API 통신
-const server = "http://quokka.run:8000";
+const server = "http://127.0.0.1:8000";
+
+//==========================================================
+//셀러 브랜드 정보
+
+export async function apiSellerBrand(channelNo: string) {
+  const response = await fetch(`${server}/api/seller/brand?channelNo=${channelNo}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.json();
+}
+//==========================================================
 
 //==========================================================
 //상품 리스트
