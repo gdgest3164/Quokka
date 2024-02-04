@@ -40,7 +40,6 @@ export interface ChannelProduct {
   channelNo: number;
   details: ProductDetails[];
 }
-
 export interface Product {
   originProductNo: number;
   channelProducts: ChannelProduct[];
@@ -72,8 +71,9 @@ export interface ProductAddress {
   is_use: boolean;
   url: string;
 }
+
 export interface ProductsResponse {
-  products: Product[];
+  contents: Product[];
   totalElements: number;
   size: number;
   address: ProductAddress[];

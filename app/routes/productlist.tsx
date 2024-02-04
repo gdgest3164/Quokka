@@ -28,12 +28,14 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function ProductList() {
   const [stockModalOpen, setStockModalOpen] = useState(false);
   const { products } = useLoaderData<typeof loader>();
+  const [items, setItems] = useState<ProductsResponse | undefined>();
   const [address, setAddress] = useState<ProductAddress[]>([]);
   const { state } = useNavigation();
   const navigate = useNavigate();
 
   useEffect(() => {
     setAddress(products.address);
+    setItems(products);
   }, [products]);
 
   const table_title = [
@@ -61,7 +63,7 @@ export default function ProductList() {
     navigate(`?size=${products.size}&page=${page}`);
   };
 
-  //도매업 주소 선택 이벤트
+  //상품 리스트 - 도매업 선택 이벤트
   const handleWholesaleAddress = async (e: React.ChangeEvent<HTMLSelectElement>, originProductNo: number) => {
     const target = e.target as HTMLSelectElement;
     const addressBookNo = target.value;
@@ -189,54 +191,55 @@ export default function ProductList() {
           }
           data={
             <>
-              {products.contents.map((product: Product) => (
-                <tr
-                  key={product.channelProducts[0].originProductNo}
-                  className={`odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 ${
-                    product.channelProducts[0].statusType !== `SALE` ? `text-red-500` : ``
-                  } hover:bg-slate-100 dark:hover:bg-slate-700 transition duration-300 ease-in-out cursor-pointer`}
-                >
-                  <th scope="row" className="px-4 py-3 text-xs whitespace-nowrap ">
-                    {product.channelProducts[0].originProductNo}
-                  </th>
-                  <td className="px-4 py-3">
-                    <img src={product.channelProducts[0].representativeImage.url} alt={product.channelProducts[0].name} className={"w-24 rounded-md shadow-xl"} loading="lazy" />
-                  </td>
-                  <td className="px-4 py-3 text-sm">{product.channelProducts[0].name}</td>
-                  <td className="px-4 py-3">{product.channelProducts[0].stockQuantity}</td>
-                  <td className="px-4 py-3">{product.channelProducts[0].mobileDiscountedPrice}</td>
-                  {/* <td className="px-4 py-3">{product.channelProducts[0].brandName}</td> */}
-                  <td className={`px-4 py-3 `}>
-                    {product.channelProducts[0].statusType === "WAIT" && "판매 대기"}
-                    {product.channelProducts[0].statusType === "SALE" && "판매 중"}
-                    {product.channelProducts[0].statusType === "OUTOFSTOCK" && "품절"}
-                    {product.channelProducts[0].statusType === "UNADMISSION" && "승인 대기"}
-                    {product.channelProducts[0].statusType === "REJECTION" && "승인 거부"}
-                    {product.channelProducts[0].statusType === "SUSPENSION" && "판매 중지"}
-                    {product.channelProducts[0].statusType === "CLOSE" && "판매 종료"}
-                    {product.channelProducts[0].statusType === "PROHIBITION" && "판매 금지"}
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap">{new Date(product.channelProducts[0].regDate).toISOString().split("T")[0]}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <select
-                      id="countries"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      onChange={(e) => handleWholesaleAddress(e, product.originProductNo)}
-                      value={product.channelProducts[0].details && product.channelProducts[0].details.length > 0 ? product.channelProducts[0].details[0].addressBookNo : "없음"}
-                    >
-                      <option value={""}>없음</option>
-                      {address.map((prd_addr: ProductAddress) => {
-                        if (prd_addr.is_use)
-                          return (
-                            <option key={prd_addr.addressBookNo} value={prd_addr.addressBookNo}>
-                              {prd_addr.name}
-                            </option>
-                          );
-                      })}
-                    </select>
-                  </td>
-                </tr>
-              ))}
+              {items &&
+                items.contents.map((product: Product) => (
+                  <tr
+                    key={product.channelProducts[0].originProductNo}
+                    className={`odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 ${
+                      product.channelProducts[0].statusType !== `SALE` ? `text-red-500` : ``
+                    } hover:bg-slate-100 dark:hover:bg-slate-700 transition duration-300 ease-in-out cursor-pointer`}
+                  >
+                    <th scope="row" className="px-4 py-3 text-xs whitespace-nowrap ">
+                      {product.channelProducts[0].originProductNo}
+                    </th>
+                    <td className="px-4 py-3">
+                      <img src={product.channelProducts[0].representativeImage.url} alt={product.channelProducts[0].name} className={"w-24 rounded-md shadow-xl"} loading="lazy" />
+                    </td>
+                    <td className="px-4 py-3 text-sm">{product.channelProducts[0].name}</td>
+                    <td className="px-4 py-3">{product.channelProducts[0].stockQuantity}</td>
+                    <td className="px-4 py-3">{product.channelProducts[0].mobileDiscountedPrice}</td>
+                    {/* <td className="px-4 py-3">{product.channelProducts[0].brandName}</td> */}
+                    <td className={`px-4 py-3 `}>
+                      {product.channelProducts[0].statusType === "WAIT" && "판매 대기"}
+                      {product.channelProducts[0].statusType === "SALE" && "판매 중"}
+                      {product.channelProducts[0].statusType === "OUTOFSTOCK" && "품절"}
+                      {product.channelProducts[0].statusType === "UNADMISSION" && "승인 대기"}
+                      {product.channelProducts[0].statusType === "REJECTION" && "승인 거부"}
+                      {product.channelProducts[0].statusType === "SUSPENSION" && "판매 중지"}
+                      {product.channelProducts[0].statusType === "CLOSE" && "판매 종료"}
+                      {product.channelProducts[0].statusType === "PROHIBITION" && "판매 금지"}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">{new Date(product.channelProducts[0].regDate).toISOString().split("T")[0]}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <select
+                        id="countries"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        onChange={(e) => handleWholesaleAddress(e, product.originProductNo)}
+                        defaultValue={product.channelProducts[0].details && product.channelProducts[0].details.length > 0 ? product.channelProducts[0].details[0].addressBookNo : "없음"}
+                      >
+                        <option value={0}>없음</option>
+                        {address.map((prd_addr: ProductAddress) => {
+                          if (prd_addr.is_use)
+                            return (
+                              <option key={prd_addr.addressBookNo} value={prd_addr.addressBookNo}>
+                                {prd_addr.name}
+                              </option>
+                            );
+                        })}
+                      </select>
+                    </td>
+                  </tr>
+                ))}
             </>
           }
         />
