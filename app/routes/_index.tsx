@@ -1,7 +1,7 @@
 import { LoaderFunction, type MetaFunction } from "@remix-run/node";
 import Component from "../Components/Layouts/component";
 import { useEffect, useState } from "react";
-import { apiSellerBrand } from "../api/api";
+import { apiSellerBrand, status_stockAutoProcess, stockAutoProcess } from "../api/api";
 import { useLoaderData } from "@remix-run/react";
 import { LoaderData } from "../root";
 import moment from "moment";
@@ -23,15 +23,21 @@ export default function Index() {
   const [updateDate, setUpdateDate] = useState(moment().format("YYYY-MM-DD HH:mm:ss"));
 
   useEffect(() => {
-    const formattedDate = moment(data.brand.update_at).format("YYYY-MM-DD HH:mm:ss");
+    const formattedDate = moment.utc(data.brand.update_at).format("YYYY-MM-DD HH:mm:ss");
     setUpdateDate(formattedDate);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //재고수 업데이트 이벤트
-  const stockUpdate = () => {
-    console.log("start");
-    setUpdateDate(moment().format("YYYY-MM-DD HH:mm:ss"));
+  const stockUpdate = async () => {
+    const status = await (await status_stockAutoProcess(data)).json();
+
+    if (!status.status) {
+      const stock_start = await stockAutoProcess(data);
+      if (stock_start.ok) {
+        setUpdateDate(moment().format("YYYY-MM-DD HH:mm:ss"));
+      }
+    }
   };
 
   return (

@@ -1,3 +1,5 @@
+import { LoaderData } from "../root";
+
 //API 통신
 const server = "https://quokka.run:8000";
 
@@ -58,10 +60,41 @@ export async function localAddressUpdate(data: localAddressUpdateProp) {
 interface productAddressUpdateProp {
   originProductNo: number;
   addressBookNo: string;
+  status?: string;
 }
 
 export async function productAddressUpdate(data: productAddressUpdateProp) {
   const response = await fetch(`${server}/api/seller/product/address/update`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  return response;
+}
+//==========================================================
+
+//==========================================================
+//재고수 자동화
+export async function stockAutoProcess(data: LoaderData) {
+  const response = await fetch(`${server}/auto/stock/start`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  return response;
+}
+//==========================================================
+
+//==========================================================
+//재고수 자동화 사용중 여부
+export async function status_stockAutoProcess(data: LoaderData) {
+  const response = await fetch(`${server}/auto/stock/status`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
