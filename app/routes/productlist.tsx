@@ -40,7 +40,7 @@ export default function ProductList() {
 
   const table_title = [
     { title: "상품번호", width: "8%" },
-    { title: "대표이미지", width: "15%" },
+    { title: "대표이미지", width: "10%" },
     { title: "상품명", width: "20%" },
     { title: "재고 수", width: "10%" },
     { title: "판매 가격", width: "10%" },
@@ -203,9 +203,11 @@ export default function ProductList() {
                       {product.channelProducts[0].originProductNo}
                     </th>
                     <td className="px-4 py-3">
-                      <img src={product.channelProducts[0].representativeImage.url} alt={product.channelProducts[0].name} className={"w-24 rounded-md shadow-xl"} loading="lazy" />
+                      <img src={product.channelProducts[0].representativeImage.url} alt={product.channelProducts[0].name} className={"w-28 rounded-md shadow-xl"} loading="lazy" />
                     </td>
-                    <td className="px-4 py-3 text-sm">{product.channelProducts[0].name}</td>
+                    <td className="px-4 py-3 text-sm whitespace-nowrap min-w-20 max-w-32 overflow-auto sm:whitespace-nowrap  md:whitespace-nowrap  lg:whitespace-nowrap xl:whitespace-normal">
+                      {product.channelProducts[0].name}
+                    </td>
                     <td className="px-4 py-3">{product.channelProducts[0].stockQuantity}</td>
                     <td className="px-4 py-3">{product.channelProducts[0].mobileDiscountedPrice}</td>
                     {/* <td className="px-4 py-3">{product.channelProducts[0].brandName}</td> */}
@@ -223,7 +225,7 @@ export default function ProductList() {
                     <td className="px-4 py-3 whitespace-nowrap">
                       <select
                         id="countries"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 min-w-24"
                         onChange={(e) => handleWholesaleAddress(e, product.originProductNo)}
                         defaultValue={product.channelProducts[0].details && product.channelProducts[0].details.length > 0 ? product.channelProducts[0].details[0].addressBookNo : "없음"}
                       >

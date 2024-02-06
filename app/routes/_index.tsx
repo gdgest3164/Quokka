@@ -43,7 +43,7 @@ export default function Index() {
   return (
     <>
       <Component>
-        <div className="grid grid-cols-5 gap-4 mb-4">
+        <div className="grid grid-cols-1 gap-4 mb-4 sm:grid-cols-2 lg:grid-cols-3">
           <div className="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
             <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white flex items-center">
               재고수 업데이트
@@ -55,7 +55,7 @@ export default function Index() {
             </h5>
             <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{updateDate}</p>
           </div>
-
+          {/* 
           <div className="flex items-center justify-center p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
             <p className="text-2xl text-gray-400 dark:text-gray-500">
               <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
@@ -143,7 +143,7 @@ export default function Index() {
                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
               </svg>
             </p>
-          </div>
+          </div>*/}
         </div>
       </Component>
     </>
