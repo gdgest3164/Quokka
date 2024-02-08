@@ -1,5 +1,5 @@
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from "@remix-run/react";
-import type { LoaderFunction } from "@remix-run/node";
+import { json, type LoaderFunction } from "@remix-run/node";
 import clsx from "clsx";
 
 import { NonFlashOfWrongThemeEls, Theme, ThemeProvider, useTheme } from "./utils/theme-provider";
@@ -8,6 +8,7 @@ import { getThemeSession } from "./utils/theme.server";
 import styles from "./tailwind.css";
 import Sidebar, { SidebarProps } from "./Components/Layouts/sidebar";
 import { apiSellerBrand } from "./api/api";
+import { commitSession, getSession } from "./utils/cookies";
 
 export function links() {
   return [{ rel: "stylesheet", href: styles }];
@@ -16,6 +17,7 @@ export function links() {
 export type LoaderData = {
   theme: Theme | null;
   brand: SidebarProps;
+  channelNo?: string;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -29,7 +31,21 @@ export const loader: LoaderFunction = async ({ request }) => {
     theme: themeSession.getTheme(),
     brand: responseData,
   };
-  return data;
+
+  //쿠키 세팅
+  const session = await getSession(request.headers.get("Cookie"));
+  const brandChannelNo = responseData.channelNo;
+  session.set("Qk_channel", brandChannelNo);
+  const cookie = await commitSession(session);
+
+  return json(
+    { data },
+    {
+      headers: {
+        "Set-Cookie": cookie,
+      },
+    }
+  );
 };
 
 export function Head(data: LoaderData) {
@@ -45,7 +61,8 @@ export function Head(data: LoaderData) {
 }
 
 function App() {
-  const data = useLoaderData<LoaderData>();
+  //@ts-expect-error description: 쿠키와 같이 보내기 data를 감싸서 보내기 때문에, data는 무시하기로 함
+  const { data } = useLoaderData<LoaderData>();
   const [theme] = useTheme();
 
   return (
@@ -63,7 +80,8 @@ function App() {
 }
 
 export default function AppWithProviders() {
-  const data = useLoaderData<LoaderData>();
+  //@ts-expect-error description: 쿠키와 같이 보내기 data를 감싸서 보내기 때문에, data는 무시하기로 함
+  const { data } = useLoaderData<LoaderData>();
 
   return (
     <ThemeProvider specifiedTheme={data.theme}>

@@ -20,8 +20,8 @@ export async function apiSellerBrand(channelNo: string) {
 //==========================================================
 //상품 리스트
 
-export async function sellerProducts(size: number, page: number) {
-  const response = await fetch(`${server}/api/seller/products?size=${size}&page=${page}`, {
+export async function sellerProducts(size: number, page: number, channel: string) {
+  const response = await fetch(`${server}/api/seller/products?size=${size}&page=${page}&channel=${channel}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -48,6 +48,25 @@ export async function localAddressUpdate(data: localAddressUpdateProp) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
+  });
+
+  return response;
+}
+//==========================================================
+
+//==========================================================
+//실제 도매 데이터 생성 및 업데이트
+interface apiSellerAddressUpdateProp {
+  channelNo: string;
+}
+
+export async function apiSellerAddressUpdate(channelNo: apiSellerAddressUpdateProp) {
+  const response = await fetch(`${server}/api/seller/address/update`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(channelNo),
   });
 
   return response;

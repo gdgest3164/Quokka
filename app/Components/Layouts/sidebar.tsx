@@ -13,6 +13,7 @@ export interface SidebarProps {
   grade: string;
   created_at: string;
   update_at: string;
+  stock_auto: boolean;
 }
 
 export default function Sidebar(brand: SidebarProps) {
@@ -80,7 +81,7 @@ export default function Sidebar(brand: SidebarProps) {
       </aside>
       <button
         onClick={() => setSidebarOpen(false)}
-        className={`fixed inset-0 bg-gray-500 bg-opacity-50 backdrop-filter backdrop-blur-sm transition-opacity ${sidebarOpen ? "block" : "hidden"} `}
+        className={`fixed inset-0 bg-gray-500 bg-opacity-50 backdrop-filter backdrop-blur-sm transition-opacity z-10 ${sidebarOpen ? "block" : "hidden"} `}
       ></button>
     </>
   );

@@ -7,6 +7,7 @@ import Component from "../Components/Layouts/component";
 import StockModal from "../Components/Modals/StockModal";
 import { useEffect, useState } from "react";
 import { localAddressUpdate, productAddressUpdate, sellerProducts } from "../api/api";
+import { getSession } from "../utils/cookies";
 
 export const meta: MetaFunction = ({ error }) => {
   return [{ title: error ? "oops!" : "상품목록 | 쿼카" }];
@@ -18,9 +19,11 @@ export const loader: LoaderFunction = async ({ request }) => {
   // 기본값 설정
   const size: number = parseInt(searchParams.get("size") as string) || 10;
   const page: number = parseInt(searchParams.get("page") as string) || 1;
+  const session = await getSession(request.headers.get("Cookie"));
+  const channel: string = session.get("Qk_channel");
 
   //상품 리스트 가져오기
-  const products: ProductsResponse = await sellerProducts(size, page);
+  const products: ProductsResponse = await sellerProducts(size, page, channel);
 
   return json({ products });
 };
@@ -203,7 +206,7 @@ export default function ProductList() {
                       {product.channelProducts[0].originProductNo}
                     </th>
                     <td className="px-4 py-3">
-                      <img src={product.channelProducts[0].representativeImage.url} alt={product.channelProducts[0].name} className={"w-28 rounded-md shadow-xl"} loading="lazy" />
+                      <img src={product.channelProducts[0].representativeImage.url} alt={product.channelProducts[0].name} className={"w-28 rounded-md shadow-xl min-w-24"} loading="lazy" />
                     </td>
                     <td className="px-4 py-3 text-sm whitespace-nowrap min-w-20 max-w-32 overflow-auto sm:whitespace-nowrap  md:whitespace-nowrap  lg:whitespace-nowrap xl:whitespace-normal">
                       {product.channelProducts[0].name}
