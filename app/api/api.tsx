@@ -12,6 +12,7 @@ export async function apiSellerBrand(channelNo: string) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
   });
   return response.json();
 }
@@ -26,6 +27,7 @@ export async function sellerProducts(size: number, page: number, channel: string
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
   });
   return response.json();
 }
@@ -47,6 +49,7 @@ export async function localAddressUpdate(data: localAddressUpdateProp) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(data),
   });
 
@@ -66,6 +69,7 @@ export async function apiSellerAddressUpdate(channelNo: apiSellerAddressUpdatePr
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(channelNo),
   });
 
@@ -88,6 +92,7 @@ export async function productAddressUpdate(data: productAddressUpdateProp) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(data),
   });
 
@@ -103,6 +108,7 @@ export async function stockAutoProcess(data: LoaderData) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(data),
   });
 
@@ -118,6 +124,7 @@ export async function status_stockAutoProcess(data: LoaderData) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(data),
   });
 
