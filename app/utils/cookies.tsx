@@ -1,4 +1,5 @@
 import { createCookieSessionStorage } from "@remix-run/node";
+import { apiSellerBrand } from "../api/api";
 
 // getSession : cookie string에서 세션을 회수.
 // commitSession: 새로운 cookie string 생성.
@@ -8,3 +9,15 @@ export const { getSession, commitSession, destroySession } = createCookieSession
     name: "Qk_channel",
   },
 });
+
+//쿠키 생성
+export const channelNoCookie = async () => {
+  const session = await getSession("100987434");
+  const responseData = await apiSellerBrand(session.toString());
+  const brandChannelNo = responseData.channelNo;
+  await session.set("Qk_channel", brandChannelNo);
+  const cookie = await commitSession(session);
+  return {
+    "Set-Cookie": cookie,
+  };
+};

@@ -38,12 +38,13 @@ export default function Index() {
   //재고수 업데이트 이벤트
   const stockUpdate = async () => {
     const status = await (await status_stockAutoProcess(data)).json();
+    setUpdating(true);
 
     if (!status.status) {
       const stock_start = await stockAutoProcess(data);
       if (stock_start.ok) {
         setUpdateDate(moment().format("YYYY-MM-DD HH:mm:ss"));
-        return setUpdating(true);
+        return setUpdating(false);
       }
     }
   };

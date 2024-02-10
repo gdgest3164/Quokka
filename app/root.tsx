@@ -35,7 +35,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   //쿠키 세팅
   const session = await getSession(request.headers.get("Cookie"));
   const brandChannelNo = responseData.channelNo;
-  session.set("Qk_channel", brandChannelNo);
+  await session.set("Qk_channel", brandChannelNo);
   const cookie = await commitSession(session);
 
   return json(
