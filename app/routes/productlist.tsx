@@ -42,13 +42,14 @@ export default function ProductList() {
   }, [products]);
 
   const table_title = [
-    { title: "상품번호", width: "8%" },
-    { title: "대표이미지", width: "10%" },
+    { title: "상품번호", width: "5%" },
+    { title: "상품코드", width: "5%" },
+    { title: "대표이미지", width: "5%" },
     { title: "상품명", width: "20%" },
-    { title: "재고 수", width: "10%" },
-    { title: "판매 가격", width: "10%" },
-    { title: "상태", width: "10%" },
-    { title: "등록일", width: "10%" },
+    { title: "재고 수", width: "3%" },
+    { title: "판매 가격", width: "5%" },
+    { title: "상태", width: "5%" },
+    { title: "등록일", width: "5%" },
     { title: "도매업", width: "10%" },
   ];
 
@@ -199,12 +200,13 @@ export default function ProductList() {
                   <tr
                     key={product.channelProducts[0].originProductNo}
                     className={`odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 ${
-                      product.channelProducts[0].statusType !== `SALE` ? `text-red-500` : ``
-                    } hover:bg-slate-100 dark:hover:bg-slate-700 transition duration-300 ease-in-out cursor-pointer`}
+                      product.channelProducts[0].statusType !== `SALE` && `text-red-500`
+                    } ${!product.channelProducts[0].sellerManagementCode && `text-yellow-500`} hover:bg-slate-100 dark:hover:bg-slate-700 transition duration-300 ease-in-out cursor-pointer`}
                   >
                     <th scope="row" className="px-4 py-3 text-xs whitespace-nowrap ">
                       {product.channelProducts[0].originProductNo}
                     </th>
+                    <td className="px-4 py-3">{product.channelProducts[0].sellerManagementCode || "! 기재 필요 !"}</td>
                     <td className="px-4 py-3">
                       <img src={product.channelProducts[0].representativeImage.url} alt={product.channelProducts[0].name} className={"w-28 rounded-md shadow-xl min-w-24"} loading="lazy" />
                     </td>
@@ -214,7 +216,7 @@ export default function ProductList() {
                     <td className="px-4 py-3">{product.channelProducts[0].stockQuantity}</td>
                     <td className="px-4 py-3">{product.channelProducts[0].mobileDiscountedPrice}</td>
                     {/* <td className="px-4 py-3">{product.channelProducts[0].brandName}</td> */}
-                    <td className={`px-4 py-3 `}>
+                    <td className={`px-4 py-3 whitespace-nowrap`}>
                       {product.channelProducts[0].statusType === "WAIT" && "판매 대기"}
                       {product.channelProducts[0].statusType === "SALE" && "판매 중"}
                       {product.channelProducts[0].statusType === "OUTOFSTOCK" && "품절"}

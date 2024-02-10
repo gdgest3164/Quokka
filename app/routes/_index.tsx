@@ -44,9 +44,9 @@ export default function Index() {
       const stock_start = await stockAutoProcess(data);
       if (stock_start.ok) {
         setUpdateDate(moment().format("YYYY-MM-DD HH:mm:ss"));
-        return setUpdating(false);
       }
     }
+    setUpdating(false);
   };
 
   //도매업 업데이트
