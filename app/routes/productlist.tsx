@@ -211,29 +211,7 @@ export default function ProductList() {
                       <img src={product.channelProducts[0].representativeImage.url} alt={product.channelProducts[0].name} className={"w-28 rounded-md shadow-xl min-w-24"} loading="lazy" />
                     </td>
                     <td className="px-4 py-3 text-sm whitespace-nowrap min-w-20 max-w-32 overflow-auto sm:whitespace-nowrap  md:whitespace-nowrap  lg:whitespace-nowrap xl:whitespace-normal">
-                      {product.channelProducts[0].sellerManagementCode &&
-                      product.channelProducts[0].details &&
-                      product.channelProducts[0].details.length > 0 &&
-                      address.find((e) => e.addressBookNo == product.channelProducts[0].details[0].addressBookNo)?.url &&
-                      product.channelProducts[0].details &&
-                      product.channelProducts[0].details.length > 0 ? (
-                        <a
-                          href={
-                            product.channelProducts[0].details && product.channelProducts[0].details.length > 0
-                              ? address
-                                  .find((e) => e.addressBookNo == product.channelProducts[0].details[0].addressBookNo)
-                                  ?.url.replace("{product_code}", product.channelProducts[0].sellerManagementCode)
-                              : "/"
-                          }
-                          target="_blank"
-                          className="hover:text-orange-500"
-                          rel="noopener noreferrer"
-                        >
-                          {product.channelProducts[0].name}
-                        </a>
-                      ) : (
-                        product.channelProducts[0].name
-                      )}
+                      {product.channelProducts[0].name}
                     </td>
                     <td className="px-4 py-3">{product.channelProducts[0].stockQuantity}</td>
                     <td className="px-4 py-3">{product.channelProducts[0].mobileDiscountedPrice}</td>
