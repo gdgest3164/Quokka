@@ -45,12 +45,12 @@ export default function ProductList() {
     { title: "상품번호", width: "5%" },
     { title: "상품코드", width: "5%" },
     { title: "대표이미지", width: "5%" },
-    { title: "상품명", width: "20%" },
+    { title: "상품명", width: "30%" },
     { title: "재고 수", width: "3%" },
     { title: "판매 가격", width: "5%" },
     { title: "상태", width: "5%" },
     { title: "등록일", width: "5%" },
-    { title: "도매업", width: "10%" },
+    { title: "도매업", width: "8%" },
   ];
 
   //페이네이션 이벤트
@@ -201,7 +201,7 @@ export default function ProductList() {
                     key={product.channelProducts[0].originProductNo}
                     className={`odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 ${
                       product.channelProducts[0].statusType !== `SALE` && `text-red-500`
-                    } ${!product.channelProducts[0].sellerManagementCode && `text-yellow-500`} hover:bg-slate-100 dark:hover:bg-slate-700 transition duration-300 ease-in-out cursor-pointer`}
+                    } ${!product.channelProducts[0].sellerManagementCode && `text-yellow-500`} hover:bg-slate-100 dark:hover:bg-slate-700 transition duration-300 ease-in-out`}
                   >
                     <th scope="row" className="px-4 py-3 text-xs whitespace-nowrap ">
                       {product.channelProducts[0].originProductNo}
@@ -211,7 +211,29 @@ export default function ProductList() {
                       <img src={product.channelProducts[0].representativeImage.url} alt={product.channelProducts[0].name} className={"w-28 rounded-md shadow-xl min-w-24"} loading="lazy" />
                     </td>
                     <td className="px-4 py-3 text-sm whitespace-nowrap min-w-20 max-w-32 overflow-auto sm:whitespace-nowrap  md:whitespace-nowrap  lg:whitespace-nowrap xl:whitespace-normal">
-                      {product.channelProducts[0].name}
+                      {product.channelProducts[0].sellerManagementCode &&
+                      product.channelProducts[0].details &&
+                      product.channelProducts[0].details.length > 0 &&
+                      address.find((e) => e.addressBookNo == product.channelProducts[0].details[0].addressBookNo)?.url &&
+                      product.channelProducts[0].details &&
+                      product.channelProducts[0].details.length > 0 ? (
+                        <a
+                          href={
+                            product.channelProducts[0].details && product.channelProducts[0].details.length > 0
+                              ? address
+                                  .find((e) => e.addressBookNo == product.channelProducts[0].details[0].addressBookNo)
+                                  ?.url.replace("{product_code}", product.channelProducts[0].sellerManagementCode)
+                              : "/"
+                          }
+                          target="_blank"
+                          className="hover:text-orange-500"
+                          rel="noopener noreferrer"
+                        >
+                          {product.channelProducts[0].name}
+                        </a>
+                      ) : (
+                        product.channelProducts[0].name
+                      )}
                     </td>
                     <td className="px-4 py-3">{product.channelProducts[0].stockQuantity}</td>
                     <td className="px-4 py-3">{product.channelProducts[0].mobileDiscountedPrice}</td>
