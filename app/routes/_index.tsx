@@ -24,7 +24,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (result.login) {
     //쿠키 세팅
-    const cookie = await channelNoCookie("Qk_channel", result.channelNo, result);
+    const cookie = await channelNoCookie(request, "Qk_channel", result);
     return redirect("/dashboard", { headers: { "Set-Cookie": cookie } });
   } else {
     return json({ errorMessage: result.message }, { status: 400 });

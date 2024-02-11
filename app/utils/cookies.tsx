@@ -22,10 +22,10 @@ interface channelNoCookieProp {
   };
 }
 //쿠키 생성
-export const channelNoCookie = async (name: string, code: string, datas: channelNoCookieProp) => {
-  const session = await getSession(code);
+export const channelNoCookie = async (request: Request, name: string, datas: channelNoCookieProp) => {
+  const session = await getSession(request.headers.get("Cookie"));
   const expires = new Date(Date.now() + 1000 * 60 * 60 * 24 * 2); // 이틀 후 만료
   session.set(name, datas);
-  const create_cookie = await commitSession(session, { sameSite: "lax", expires, httpOnly: true, secure: process.env.NODE_ENV === "production" });
+  const create_cookie = await commitSession(session, { sameSite: "lax", expires, httpOnly: false, secure: process.env.NODE_ENV === "production" });
   return create_cookie;
 };
