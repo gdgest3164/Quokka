@@ -1,5 +1,5 @@
 import { Link } from "@remix-run/react";
-import Switcher from "../Switcher";
+// import Switcher from "../Switcher";
 import { useState } from "react";
 
 export interface SidebarProps {
@@ -44,7 +44,7 @@ export default function Sidebar(brand: SidebarProps) {
               <img src={brand.representativeImageUrl.replace("http://", "https://")} className="w-10 h-10 rounded-full mr-3" alt={brand.name} />
               <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">{brand.name}</span>
             </a>
-            <Switcher />
+            {/* <Switcher /> */}
           </div>
           <ul className="space-y-2 font-medium pt-5 mt-5 border-t border-gray-200 dark:border-gray-700">
             <li>
