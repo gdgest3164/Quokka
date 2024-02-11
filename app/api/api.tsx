@@ -4,10 +4,25 @@ import { LoaderData } from "../root";
 const server = "https://quokka.run:8000";
 
 //==========================================================
+//로그인
+
+export async function loginCheckApi(e: FormData) {
+  const response = await fetch(`${server}/api/loginCheck`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(Object.fromEntries(e)),
+  });
+  return response.json();
+}
+//==========================================================
+
+//==========================================================
 //셀러 브랜드 정보
 
-export async function apiSellerBrand(channelNo: string) {
-  const response = await fetch(`${server}/api/seller/brand?channelNo=${channelNo}`, {
+export async function apiSellerBrand() {
+  const response = await fetch(`${server}/api/seller/brand`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -21,8 +36,8 @@ export async function apiSellerBrand(channelNo: string) {
 //==========================================================
 //상품 리스트
 
-export async function sellerProducts(size: number, page: number, channel: string) {
-  const response = await fetch(`${server}/api/seller/products?size=${size}&page=${page}&channel=${channel}`, {
+export async function sellerProducts(size: number, page: number) {
+  const response = await fetch(`${server}/api/seller/products?size=${size}&page=${page}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

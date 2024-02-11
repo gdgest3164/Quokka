@@ -1,4 +1,4 @@
-import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from "@remix-run/react";
+import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData, useLocation } from "@remix-run/react";
 import { json, type LoaderFunction } from "@remix-run/node";
 import clsx from "clsx";
 
@@ -7,8 +7,7 @@ import { getThemeSession } from "./utils/theme.server";
 
 import styles from "./tailwind.css";
 import Sidebar, { SidebarProps } from "./Components/Layouts/sidebar";
-import { apiSellerBrand } from "./api/api";
-import { commitSession, getSession } from "./utils/cookies";
+import { getSession } from "./utils/cookies";
 
 export function links() {
   return [{ rel: "stylesheet", href: styles }];
@@ -16,7 +15,7 @@ export function links() {
 
 export type LoaderData = {
   theme: Theme | null;
-  brand: SidebarProps;
+  brand?: SidebarProps;
   channelNo?: string;
 };
 
@@ -24,28 +23,24 @@ export const loader: LoaderFunction = async ({ request }) => {
   //다크모드
   const themeSession = await getThemeSession(request);
 
-  //셀러 브랜드 정보
-  const responseData = await apiSellerBrand("100987434");
-
-  const data: LoaderData = {
+  const session = await getSession(request.headers.get("Cookie"));
+  const channel_data = session.get("Qk_channel");
+  let data: LoaderData = {
     theme: themeSession.getTheme(),
-    brand: responseData,
   };
 
-  //쿠키 세팅
-  const session = await getSession(request.headers.get("Cookie"));
-  const brandChannelNo = responseData.channelNo;
-  await session.set("Qk_channel", brandChannelNo);
-  const cookie = await commitSession(session);
+  if (channel_data !== void 0) {
+    //셀러 브랜드 정보
 
-  return json(
-    { data },
-    {
-      headers: {
-        "Set-Cookie": cookie,
-      },
-    }
-  );
+    data = {
+      ...data,
+      brand: channel_data.data,
+    };
+
+    return json({ data });
+  }
+
+  return json({ data });
 };
 
 export function Head(data: LoaderData) {
@@ -57,6 +52,24 @@ export function Head(data: LoaderData) {
       <Links />
       <NonFlashOfWrongThemeEls ssrTheme={Boolean(data.theme)} />
     </head>
+  );
+}
+
+function Login() {
+  //@ts-expect-error description: 쿠키와 같이 보내기 data를 감싸서 보내기 때문에, data는 무시하기로 함
+  const { data } = useLoaderData<LoaderData>();
+  const [theme] = useTheme();
+
+  return (
+    <html lang="kr" className={clsx(theme)} suppressHydrationWarning={true}>
+      <Head {...data} />
+      <body>
+        <Outlet />
+        <ScrollRestoration />
+        <Scripts />
+        {process.env.NODE_ENV === "development" && <LiveReload />}
+      </body>
+    </html>
   );
 }
 
@@ -82,10 +95,7 @@ function App() {
 export default function AppWithProviders() {
   //@ts-expect-error description: 쿠키와 같이 보내기 data를 감싸서 보내기 때문에, data는 무시하기로 함
   const { data } = useLoaderData<LoaderData>();
+  const location = useLocation();
 
-  return (
-    <ThemeProvider specifiedTheme={data.theme}>
-      <App />
-    </ThemeProvider>
-  );
+  return <ThemeProvider specifiedTheme={data.theme}>{location.pathname === "/" ? <Login /> : <App />}</ThemeProvider>;
 }

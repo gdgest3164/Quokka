@@ -1,4 +1,4 @@
-import { json, type LoaderFunction, type MetaFunction } from "@remix-run/node";
+import { json, redirect, type LoaderFunction, type MetaFunction } from "@remix-run/node";
 import { useLoaderData, useNavigate, useNavigation } from "@remix-run/react";
 import Navigation from "../Components/Table/nav";
 import { Product, ProductAddress, ProductsResponse } from "../Components/Product/product.type";
@@ -20,10 +20,11 @@ export const loader: LoaderFunction = async ({ request }) => {
   const size: number = parseInt(searchParams.get("size") as string) || 10;
   const page: number = parseInt(searchParams.get("page") as string) || 1;
   const session = await getSession(request.headers.get("Cookie"));
-  const channel: string = session.get("Qk_channel");
+  const Qk_channel: string = await session.get("Qk_channel");
+  if (!Qk_channel) return redirect("/");
 
   //상품 리스트 가져오기
-  const products: ProductsResponse = await sellerProducts(size, page, channel);
+  const products: ProductsResponse = await sellerProducts(size, page);
 
   return json({ products });
 };
@@ -211,7 +212,29 @@ export default function ProductList() {
                       <img src={product.channelProducts[0].representativeImage.url} alt={product.channelProducts[0].name} className={"w-28 rounded-md shadow-xl min-w-24"} loading="lazy" />
                     </td>
                     <td className="px-4 py-3 text-sm whitespace-nowrap min-w-20 max-w-32 overflow-auto sm:whitespace-nowrap  md:whitespace-nowrap  lg:whitespace-nowrap xl:whitespace-normal">
-                      {product.channelProducts[0].name}
+                      {product.channelProducts[0].sellerManagementCode &&
+                      product.channelProducts[0].details &&
+                      product.channelProducts[0].details.length > 0 &&
+                      address.find((e) => e.addressBookNo == product.channelProducts[0].details[0].addressBookNo)?.url &&
+                      product.channelProducts[0].details &&
+                      product.channelProducts[0].details.length > 0 ? (
+                        <a
+                          href={
+                            product.channelProducts[0].details && product.channelProducts[0].details.length > 0
+                              ? address
+                                  .find((e) => e.addressBookNo == product.channelProducts[0].details[0].addressBookNo)
+                                  ?.url.replace("{product_code}", product.channelProducts[0].sellerManagementCode)
+                              : "/"
+                          }
+                          target="_blank"
+                          className="hover:text-orange-500"
+                          rel="noopener noreferrer"
+                        >
+                          {product.channelProducts[0].name}
+                        </a>
+                      ) : (
+                        product.channelProducts[0].name
+                      )}
                     </td>
                     <td className="px-4 py-3">{product.channelProducts[0].stockQuantity}</td>
                     <td className="px-4 py-3">{product.channelProducts[0].mobileDiscountedPrice}</td>

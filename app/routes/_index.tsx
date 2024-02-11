@@ -1,189 +1,121 @@
-import { LoaderFunction, type MetaFunction } from "@remix-run/node";
-import Component from "../Components/Layouts/component";
-import { useEffect, useState } from "react";
-import { apiSellerAddressUpdate, apiSellerBrand, status_stockAutoProcess, stockAutoProcess } from "../api/api";
-import { useLoaderData } from "@remix-run/react";
-import { LoaderData } from "../root";
-import moment from "moment";
-import { getSession } from "../utils/cookies";
+import { ActionFunction, LoaderFunction, MetaFunction, json, redirect } from "@remix-run/node";
+import { loginCheckApi } from "../api/api";
+import pkg from "crypto-js";
+import { Form, useActionData } from "@remix-run/react";
+import { channelNoCookie, getSession } from "../utils/cookies";
+import { useEffect } from "react";
+const { SHA256 } = pkg;
 
 export const meta: MetaFunction = ({ error }) => {
-  return [{ title: error ? "oops!" : "대시보드 | 쿼카" }];
+  return [{ title: error ? "oops!" : "로그인 | 쿼카" }];
 };
+
+interface ActionData {
+  errorMessage?: string;
+}
+
+export const action: ActionFunction = async ({ request }) => {
+  const formData = await request.formData();
+  const email = formData.get("email") as string;
+  const password = SHA256(formData.get("password") as string).toString();
+  formData.append("email", email);
+  formData.append("password", password);
+  const result = await loginCheckApi(formData);
+
+  if (result.login) {
+    //쿠키 세팅
+    const cookie = await channelNoCookie("Qk_channel", result.channelNo, result);
+    return redirect("/dashboard", { headers: { "Set-Cookie": cookie } });
+  } else {
+    return json({ errorMessage: result.message }, { status: 400 });
+  }
+};
+
 export const loader: LoaderFunction = async ({ request }: { request: Request }) => {
-  //셀러 브랜드 정보
   const session = await getSession(request.headers.get("Cookie"));
   const channelNo = session.get("Qk_channel");
 
-  const responseData = await apiSellerBrand(channelNo);
-  const data = {
-    brand: responseData,
-    channelNo: channelNo,
-  };
-  return data;
+  if (channelNo) return redirect("/dashboard");
+
+  return [];
 };
 
-export default function Index() {
-  const data = useLoaderData<LoaderData>();
-  const [updateDate, setUpdateDate] = useState(moment().format("YYYY-MM-DD HH:mm:ss"));
-  const [updating, setUpdating] = useState<boolean>(false);
+export default function Login() {
+  const actionData = useActionData<ActionData>();
 
   useEffect(() => {
-    const formattedDate = moment.utc(data.brand.update_at).format("YYYY-MM-DD HH:mm:ss");
-    setUpdateDate(formattedDate);
-    setUpdating(data.brand.stock_auto ? true : false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  //재고수 업데이트 이벤트
-  const stockUpdate = async () => {
-    const status = await (await status_stockAutoProcess(data)).json();
-    setUpdating(true);
-
-    if (!status.status) {
-      const stock_start = await stockAutoProcess(data);
-      if (stock_start.ok) {
-        setUpdateDate(moment().format("YYYY-MM-DD HH:mm:ss"));
-      }
+    if (actionData?.errorMessage) {
+      alert(actionData.errorMessage);
     }
-    setUpdating(false);
-  };
-
-  //도매업 업데이트
-  const wholesale_update = async (channelNo: string) => {
-    const response = await apiSellerAddressUpdate({ channelNo: channelNo });
-    if (response.ok) {
-      const data = await response.json();
-      if (data.result) return alert("도매업 업데이트 완료!");
-      else return alert("업데이트할 내역이 없습니다.");
-    } else {
-      throw new Error("도매업 업데이트 실패");
-    }
-  };
+  }, [actionData]);
 
   return (
     <>
-      <Component>
-        <div className="grid grid-cols-1 gap-4 mb-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-            <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white flex items-center">
-              재고 업데이트{updating && "중..."}
-              <button className="ml-2" onClick={() => !updating && stockUpdate()} disabled={updating}>
-                <svg
-                  className={`${updating && "animate-spin"} w-6 h-6 hover:animate-spin text-gray-800 dark:text-white`}
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.7 7.7A7.1 7.1 0 0 0 5 10.8M18 4v4h-4m-7.7 8.3A7.1 7.1 0 0 0 19 13.2M6 20v-4h4" />
-                </svg>
-              </button>
-            </h5>
-            <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{updateDate}</p>
-          </div>
+      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+          {/* <img className="mx-auto h-10 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company" /> */}
+          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 dark:text-white">QUOKKA</h2>
+        </div>
 
-          <div className="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex justify-center">
-            <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white flex items-center">
-              도매업 업데이트
-              <button className="ml-2" onClick={() => wholesale_update(data.channelNo!)}>
-                <svg className={`w-6 h-6 hover:animate-spin text-gray-800 dark:text-white`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.7 7.7A7.1 7.1 0 0 0 5 10.8M18 4v4h-4m-7.7 8.3A7.1 7.1 0 0 0 19 13.2M6 20v-4h4" />
-                </svg>
+        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+          <Form className="space-y-6" method="POST">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900 dark:text-white">
+                이메일
+              </label>
+              <div className="mt-2">
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  className="block w-full rounded-md border-0 p-1.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between">
+                <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900 dark:text-white">
+                  비밀번호
+                </label>
+                {/* <div className="text-sm">
+                    <a href="/" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                      Forgot password?
+                    </a>
+                  </div> */}
+              </div>
+              <div className="mt-2">
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  className="block w-full rounded-md border-0 p-1.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+
+            <div>
+              <button
+                type="submit"
+                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              >
+                로그인
               </button>
-            </h5>
-          </div>
-          {/* 
-          <div className="flex items-center justify-center p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-            <p className="text-2xl text-gray-400 dark:text-gray-500">
-              <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
-              </svg>
-            </p>
-          </div>
-          <div className="flex items-center justify-center p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-            <p className="text-2xl text-gray-400 dark:text-gray-500">
-              <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
-              </svg>
-            </p>
-          </div>
+            </div>
+          </Form>
+
+          {/* <p className="mt-10 text-center text-sm text-gray-500">
+              Not a member?{" "}
+              <a href="#" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+                Start a 14 day free trial
+              </a>
+            </p> */}
         </div>
-        <div className="flex items-center justify-center h-48 mb-4 p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-          <p className="text-2xl text-gray-400 dark:text-gray-500">
-            <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
-            </svg>
-          </p>
-        </div>
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div className="flex items-center justify-center p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 h-28">
-            <p className="text-2xl text-gray-400 dark:text-gray-500">
-              <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
-              </svg>
-            </p>
-          </div>
-          <div className="flex items-center justify-center p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 h-28">
-            <p className="text-2xl text-gray-400 dark:text-gray-500">
-              <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
-              </svg>
-            </p>
-          </div>
-          <div className="flex items-center justify-center p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 h-28">
-            <p className="text-2xl text-gray-400 dark:text-gray-500">
-              <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
-              </svg>
-            </p>
-          </div>
-          <div className="flex items-center justify-center p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 h-28">
-            <p className="text-2xl text-gray-400 dark:text-gray-500">
-              <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
-              </svg>
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center justify-center h-48 mb-4 p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-          <p className="text-2xl text-gray-400 dark:text-gray-500">
-            <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
-            </svg>
-          </p>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="flex items-center justify-center p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 h-28">
-            <p className="text-2xl text-gray-400 dark:text-gray-500">
-              <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
-              </svg>
-            </p>
-          </div>
-          <div className="flex items-center justify-center p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 h-28">
-            <p className="text-2xl text-gray-400 dark:text-gray-500">
-              <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
-              </svg>
-            </p>
-          </div>
-          <div className="flex items-center justify-center p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 h-28">
-            <p className="text-2xl text-gray-400 dark:text-gray-500">
-              <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
-              </svg>
-            </p>
-          </div>
-          <div className="flex items-center justify-center p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 h-28">
-            <p className="text-2xl text-gray-400 dark:text-gray-500">
-              <svg className="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
-              </svg>
-            </p>
-          </div>*/}
-        </div>
-      </Component>
+      </div>
     </>
   );
 }

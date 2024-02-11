@@ -77,4 +77,5 @@ export interface ProductsResponse {
   totalElements: number;
   size: number;
   address: ProductAddress[];
+  result?: boolean;
 }
