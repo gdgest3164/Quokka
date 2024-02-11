@@ -40,11 +40,11 @@ export default function Index() {
 
   //재고수 업데이트 이벤트
   const stockUpdate = async () => {
-    const status = await (await status_stockAutoProcess(data)).json();
+    const status = await (await status_stockAutoProcess()).json();
     setUpdating(true);
 
     if (!status.status) {
-      const stock_start = await stockAutoProcess(data);
+      const stock_start = await stockAutoProcess();
       if (stock_start.ok) {
         setUpdateDate(moment().format("YYYY-MM-DD HH:mm:ss"));
       }

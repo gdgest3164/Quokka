@@ -1,5 +1,3 @@
-import { LoaderData } from "../root";
-
 //API 통신
 const server = "https://quokka.run:8000";
 
@@ -117,14 +115,13 @@ export async function productAddressUpdate(data: productAddressUpdateProp) {
 
 //==========================================================
 //재고수 자동화
-export async function stockAutoProcess(data: LoaderData) {
+export async function stockAutoProcess() {
   const response = await fetch(`${server}/auto/stock/start`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     credentials: "include",
-    body: JSON.stringify(data),
   });
 
   return response;
@@ -133,14 +130,13 @@ export async function stockAutoProcess(data: LoaderData) {
 
 //==========================================================
 //재고수 자동화 사용중 여부
-export async function status_stockAutoProcess(data: LoaderData) {
+export async function status_stockAutoProcess() {
   const response = await fetch(`${server}/auto/stock/status`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     credentials: "include",
-    body: JSON.stringify(data),
   });
 
   return response;
