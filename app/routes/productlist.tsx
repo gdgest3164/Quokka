@@ -210,7 +210,7 @@ export default function ProductList() {
                     <td className="px-4 py-3">{product.channelProducts[0].sellerManagementCode || "! 기재 필요 !"}</td>
                     <td className="px-4 py-3">
                       <img
-                        src={product.channelProducts[0].representativeImage.url.replace("https://", "https://")}
+                        src={product.channelProducts[0].representativeImage.url.replace("http://", "https://")}
                         alt={product.channelProducts[0].name}
                         className={"w-28 rounded-md shadow-xl min-w-24"}
                         loading="lazy"
