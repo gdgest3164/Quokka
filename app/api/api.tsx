@@ -36,16 +36,20 @@ export async function apiSellerBrand() {
 //==========================================================
 //상품 리스트
 
-export async function sellerProducts(size: number, page: number) {
-  const response = await fetch(`${server}/api/seller/products?size=${size}&page=${page}`, {
-    method: "GET",
+export async function sellerProducts(data: { size: number; page: number }, cookies: string) {
+  const response = await fetch(`${server}/api/seller/products`, {
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Cookie: cookies,
     },
     credentials: "include",
+    body: JSON.stringify(data),
   });
+
   return response.json();
 }
+
 //==========================================================
 
 //==========================================================
@@ -74,18 +78,14 @@ export async function localAddressUpdate(data: localAddressUpdateProp) {
 
 //==========================================================
 //실제 도매 데이터 생성 및 업데이트
-interface apiSellerAddressUpdateProp {
-  channelNo: string;
-}
 
-export async function apiSellerAddressUpdate(channelNo: apiSellerAddressUpdateProp) {
+export async function apiSellerAddressUpdate() {
   const response = await fetch(`${server}/api/seller/address/update`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     credentials: "include",
-    body: JSON.stringify(channelNo),
   });
 
   return response;

@@ -53,8 +53,8 @@ export default function Index() {
   };
 
   //도매업 업데이트
-  const wholesale_update = async (channelNo: string) => {
-    const response = await apiSellerAddressUpdate({ channelNo: channelNo });
+  const wholesale_update = async () => {
+    const response = await apiSellerAddressUpdate();
     if (response.ok) {
       const data = await response.json();
       if (data.result) return alert("도매업 업데이트 완료!");
@@ -89,7 +89,7 @@ export default function Index() {
           <div className="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex justify-center">
             <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white flex items-center">
               도매업 업데이트
-              <button className="ml-2" onClick={() => wholesale_update(data.channelNo!)}>
+              <button className="ml-2" onClick={() => wholesale_update()}>
                 <svg className={`w-6 h-6 hover:animate-spin text-gray-800 dark:text-white`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.7 7.7A7.1 7.1 0 0 0 5 10.8M18 4v4h-4m-7.7 8.3A7.1 7.1 0 0 0 19 13.2M6 20v-4h4" />
                 </svg>

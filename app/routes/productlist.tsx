@@ -20,11 +20,11 @@ export const loader: LoaderFunction = async ({ request }) => {
   const size: number = parseInt(searchParams.get("size") as string) || 10;
   const page: number = parseInt(searchParams.get("page") as string) || 1;
   const session = await getSession(request.headers.get("Cookie"));
-  const Qk_channel: string = await session.get("Qk_channel");
+  const Qk_channel = await session.get("Qk_channel");
   if (!Qk_channel) return redirect("/");
 
   //상품 리스트 가져오기
-  const products: ProductsResponse = await sellerProducts(size, page);
+  const products: ProductsResponse = await sellerProducts({ size: size, page: page }, `Qk_channel=${encodeURIComponent(JSON.stringify(Qk_channel.data))}`);
 
   return json({ products });
 };
