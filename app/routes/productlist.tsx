@@ -209,7 +209,12 @@ export default function ProductList() {
                     </th>
                     <td className="px-4 py-3">{product.channelProducts[0].sellerManagementCode || "! 기재 필요 !"}</td>
                     <td className="px-4 py-3">
-                      <img src={product.channelProducts[0].representativeImage.url} alt={product.channelProducts[0].name} className={"w-28 rounded-md shadow-xl min-w-24"} loading="lazy" />
+                      <img
+                        src={product.channelProducts[0].representativeImage.url.replace("http://", "https://")}
+                        alt={product.channelProducts[0].name}
+                        className={"w-28 rounded-md shadow-xl min-w-24"}
+                        loading="lazy"
+                      />
                     </td>
                     <td className="px-4 py-3 text-sm whitespace-nowrap min-w-20 max-w-32 overflow-auto sm:whitespace-nowrap  md:whitespace-nowrap  lg:whitespace-nowrap xl:whitespace-normal">
                       {product.channelProducts[0].sellerManagementCode &&
