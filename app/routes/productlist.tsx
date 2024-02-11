@@ -139,7 +139,7 @@ export default function ProductList() {
             type="button"
             className="text-black dark:text-white text-sm bg-[#e0e0e0] dark:bg-[#343a42] hover:bg-[#b8b8b8]/90 hover:dark:bg-[#24292F]/90 focus:ring-4 focus:outline-none focus:ring-[#aaaaaa]/50 font-medium rounded-lg px-3 py-2 text-center inline-flex items-center dark:focus:ring-gray-500 dark:hover:bg-[#050708]/30 me-2 mb-2"
           >
-            <svg className="w-6 h-6 me-2 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 me-2 text-gray-800 dark:text-white" aria-hidden="true" xmlns="https://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <path
                 stroke="currentColor"
                 strokeLinecap="round"
@@ -168,7 +168,7 @@ export default function ProductList() {
                           <div className="space-y-3">
                             {t.title == "대표이미지" ? (
                               <div className="flex items-center justify-center bg-slate-200 dark:bg-slate-500 col-span-2 w-24 h-20 rounded">
-                                <svg className="w-10 h-10 text-gray-300 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                                <svg className="w-10 h-10 text-gray-300 dark:text-gray-600" aria-hidden="true" xmlns="https://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                                   <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z" />
                                 </svg>
                               </div>
@@ -210,7 +210,7 @@ export default function ProductList() {
                     <td className="px-4 py-3">{product.channelProducts[0].sellerManagementCode || "! 기재 필요 !"}</td>
                     <td className="px-4 py-3">
                       <img
-                        src={product.channelProducts[0].representativeImage.url.replace("http://", "https://")}
+                        src={product.channelProducts[0].representativeImage.url.replace("https://", "https://")}
                         alt={product.channelProducts[0].name}
                         className={"w-28 rounded-md shadow-xl min-w-24"}
                         loading="lazy"

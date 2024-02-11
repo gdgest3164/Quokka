@@ -29,7 +29,7 @@ export default function Sidebar(brand: SidebarProps) {
         className="inline-flex items-center p-2 mt-2 ml-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
       >
         <span className="sr-only">Open sidebar</span>
-        <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="https://www.w3.org/2000/svg">
           <path
             clipRule="evenodd"
             fillRule="evenodd"
@@ -41,7 +41,7 @@ export default function Sidebar(brand: SidebarProps) {
         <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
           <div className="flex justify-between items-center mb-5">
             <a href={"//quokka-seven.vercel.app"} className="flex items-center">
-              <img src={brand.representativeImageUrl.replace("http://", "https://")} className="w-10 h-10 rounded-full mr-3" alt={brand.name} />
+              <img src={brand.representativeImageUrl.replace("https://", "https://")} className="w-10 h-10 rounded-full mr-3" alt={brand.name} />
               <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">{brand.name}</span>
             </a>
             <Switcher />
@@ -52,7 +52,7 @@ export default function Sidebar(brand: SidebarProps) {
                 <svg
                   className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
                   aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
+                  xmlns="https://www.w3.org/2000/svg"
                   fill="currentColor"
                   viewBox="0 0 22 21"
                 >
@@ -67,7 +67,7 @@ export default function Sidebar(brand: SidebarProps) {
                 <svg
                   className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
                   aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
+                  xmlns="https://www.w3.org/2000/svg"
                   fill="currentColor"
                   viewBox="0 0 18 18"
                 >

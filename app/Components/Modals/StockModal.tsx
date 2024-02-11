@@ -86,13 +86,13 @@ export default function StockModal({ get_open, setOpen, address, toggle_id, inpu
                       <div className="mt-2">
                         <div className="col-span-2">
                           <p className="text-sm text-gray-500 dark:text-gray-400 flex justify-center items-center">
-                            <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="https://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                               <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m5 12 4.7 4.5 9.3-9" />
                             </svg>
                             도매사이트의 url을 입력해주세요.
                           </p>
                           <p className="text-sm text-gray-500 dark:text-gray-400 flex justify-center items-center">
-                            <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="https://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                               <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m5 12 4.7 4.5 9.3-9" />
                             </svg>
                             만약 없을 시, [대쉬보드 -{">"} 도매업 업데이트] 클릭해주세요.
