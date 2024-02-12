@@ -17,6 +17,7 @@ export type LoaderData = {
   theme: Theme | null;
   brand?: SidebarProps;
   channelNo?: string;
+  cookie?: string;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
