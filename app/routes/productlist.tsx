@@ -205,7 +205,7 @@ export default function ProductList() {
                     } ${!product.channelProducts[0].sellerManagementCode && `text-yellow-500`} hover:bg-slate-100 dark:hover:bg-slate-700 transition duration-300 ease-in-out`}
                   >
                     <th scope="row" className="px-4 py-3 text-xs whitespace-nowrap ">
-                      {product.channelProducts[0].originProductNo}
+                      {product.channelProducts[0].channelProductNo}
                     </th>
                     <td className="px-4 py-3">{product.channelProducts[0].sellerManagementCode || "! 기재 필요 !"}</td>
                     <td className="px-4 py-3">

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { apiSellerAddressUpdate, status_stockAutoProcess, stockAutoProcess } from "../api/api";
 import { useLoaderData } from "@remix-run/react";
 import { LoaderData } from "../root";
-import moment from "moment";
+// import moment from "moment";
 import { getSession } from "../utils/cookies";
 
 export const meta: MetaFunction = ({ error }) => {
@@ -29,12 +29,12 @@ export const loader: LoaderFunction = async ({ request }: { request: Request }) 
 
 export default function Index() {
   const data = useLoaderData<LoaderData>();
-  const [updateDate, setUpdateDate] = useState(moment().format("YYYY-MM-DD HH:mm:ss"));
+  // const [updateDate, setUpdateDate] = useState(moment().format("YYYY-MM-DD HH:mm:ss"));
   const [updating, setUpdating] = useState<boolean>(false);
 
   useEffect(() => {
-    const formattedDate = moment.utc(data.brand!.update_at).format("YYYY-MM-DD HH:mm:ss");
-    setUpdateDate(formattedDate);
+    // const formattedDate = moment.utc(data.brand!.update_at).format("YYYY-MM-DD HH:mm:ss");
+    // setUpdateDate(formattedDate);
     setUpdating(data.brand!.stock_auto ? true : false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -47,7 +47,7 @@ export default function Index() {
     if (!status.status) {
       const stock_start = await stockAutoProcess(JSON.stringify(data.cookie!));
       if (stock_start.ok) {
-        setUpdateDate(moment().format("YYYY-MM-DD HH:mm:ss"));
+        // setUpdateDate(moment().format("YYYY-MM-DD HH:mm:ss"));
       }
     }
     setUpdating(false);
@@ -69,7 +69,7 @@ export default function Index() {
     <>
       <Component>
         <div className="grid grid-cols-1 gap-4 mb-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+          <div className="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex justify-center">
             <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white flex items-center">
               재고 업데이트{updating && "중..."}
               <button className="ml-2" onClick={() => !updating && stockUpdate()} disabled={updating}>
@@ -84,7 +84,7 @@ export default function Index() {
                 </svg>
               </button>
             </h5>
-            <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{updateDate}</p>
+            {/* <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{updateDate}</p> */}
           </div>
 
           <div className="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex justify-center">
