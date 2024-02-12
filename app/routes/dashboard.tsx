@@ -41,11 +41,11 @@ export default function Index() {
 
   //재고수 업데이트 이벤트
   const stockUpdate = async () => {
-    const status = await (await status_stockAutoProcess()).json();
+    const status = await (await status_stockAutoProcess(JSON.stringify(data.cookie!))).json();
     setUpdating(true);
 
     if (!status.status) {
-      const stock_start = await stockAutoProcess(`Qk_channel=${encodeURIComponent(JSON.stringify(data.cookie))}`);
+      const stock_start = await stockAutoProcess(JSON.stringify(data.cookie!));
       if (stock_start.ok) {
         setUpdateDate(moment().format("YYYY-MM-DD HH:mm:ss"));
       }
@@ -55,7 +55,7 @@ export default function Index() {
 
   //도매업 업데이트
   const wholesale_update = async () => {
-    const response = await apiSellerAddressUpdate(`Qk_channel=${encodeURIComponent(JSON.stringify(data.cookie))}`);
+    const response = await apiSellerAddressUpdate(JSON.stringify(data.cookie!));
     if (response.ok) {
       const data = await response.json();
       if (data.result) return alert("도매업 업데이트 완료!");

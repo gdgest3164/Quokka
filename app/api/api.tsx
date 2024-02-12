@@ -83,8 +83,8 @@ export async function apiSellerAddressUpdate(cookies: string) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Cookie: cookies,
     },
+    body: JSON.stringify({ cookies }),
     credentials: "include",
   });
 
@@ -122,9 +122,9 @@ export async function stockAutoProcess(cookies: string) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Cookie: cookies,
     },
     credentials: "include",
+    body: JSON.stringify({ cookies }),
   });
 
   return response;
@@ -133,13 +133,13 @@ export async function stockAutoProcess(cookies: string) {
 
 //==========================================================
 //재고수 자동화 사용중 여부
-export async function status_stockAutoProcess() {
+export async function status_stockAutoProcess(cookies: string) {
   const response = await fetch(`${server}/api/auto/stock/status`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    credentials: "include",
+    body: JSON.stringify({ cookies }),
   });
 
   return response;
