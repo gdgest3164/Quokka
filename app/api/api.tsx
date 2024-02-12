@@ -1,5 +1,6 @@
 //API 통신
 const server = "https://quokka.run:8000";
+//const server = "https://quokka.run"; //kjh 수정
 
 //==========================================================
 //로그인
