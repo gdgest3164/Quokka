@@ -19,6 +19,7 @@ export const loader: LoaderFunction = async ({ request }: { request: Request }) 
 
   // const responseData = await apiSellerBrand();
   const data = {
+    cookie: channelNo,
     brand: channelNo.data,
     channelNo: channelNo.data.channelNo,
   };
@@ -44,7 +45,7 @@ export default function Index() {
     setUpdating(true);
 
     if (!status.status) {
-      const stock_start = await stockAutoProcess();
+      const stock_start = await stockAutoProcess(data.cookie);
       if (stock_start.ok) {
         setUpdateDate(moment().format("YYYY-MM-DD HH:mm:ss"));
       }
@@ -54,7 +55,7 @@ export default function Index() {
 
   //도매업 업데이트
   const wholesale_update = async () => {
-    const response = await apiSellerAddressUpdate();
+    const response = await apiSellerAddressUpdate(data.cookie);
     if (response.ok) {
       const data = await response.json();
       if (data.result) return alert("도매업 업데이트 완료!");

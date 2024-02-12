@@ -78,11 +78,12 @@ export async function localAddressUpdate(data: localAddressUpdateProp) {
 //==========================================================
 //실제 도매 데이터 생성 및 업데이트
 
-export async function apiSellerAddressUpdate() {
+export async function apiSellerAddressUpdate(cookie: string) {
   const response = await fetch(`${server}/api/seller/address/update`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Cookie: cookie,
     },
     credentials: "include",
   });
@@ -116,11 +117,12 @@ export async function productAddressUpdate(data: productAddressUpdateProp) {
 
 //==========================================================
 //재고수 자동화
-export async function stockAutoProcess() {
+export async function stockAutoProcess(cookie: string) {
   const response = await fetch(`${server}/api/auto/stock/start`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Cookie: cookie,
     },
     credentials: "include",
   });
