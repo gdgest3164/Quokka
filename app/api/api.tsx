@@ -117,7 +117,7 @@ export async function productAddressUpdate(data: productAddressUpdateProp) {
 //==========================================================
 //재고수 자동화
 export async function stockAutoProcess() {
-  const response = await fetch(`${server}/auto/stock/start`, {
+  const response = await fetch(`${server}/api/auto/stock/start`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -132,7 +132,7 @@ export async function stockAutoProcess() {
 //==========================================================
 //재고수 자동화 사용중 여부
 export async function status_stockAutoProcess() {
-  const response = await fetch(`${server}/auto/stock/status`, {
+  const response = await fetch(`${server}/api/auto/stock/status`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
