@@ -85,18 +85,30 @@ export default function StockModal({ get_open, setOpen, address, toggle_id, inpu
                       <hr className="w-full my-4" />
                       <div className="mt-2">
                         <div className="col-span-2">
-                          <p className="text-sm text-gray-500 dark:text-gray-400 flex justify-center items-center">
-                            <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="https://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m5 12 4.7 4.5 9.3-9" />
-                            </svg>
-                            도매사이트의 url을 입력해주세요.
-                          </p>
-                          <p className="text-sm text-gray-500 dark:text-gray-400 flex justify-center items-center">
-                            <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="https://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m5 12 4.7 4.5 9.3-9" />
-                            </svg>
-                            만약 없을 시, [대쉬보드 -{">"} 도매업 업데이트] 클릭해주세요.
-                          </p>
+                          <div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                              <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="https://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m5 12 4.7 4.5 9.3-9" />
+                              </svg>
+                              상품코드를 넣을 수 있는 도매사이트의 url을 입력해주세요.
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 px-6 mb-3 text-left">
+                              ex) https://quokka.com/?qIDX=
+                              <span className="bg-red-100 text-red-800 text-xs font-medium py-0.5 rounded dark:bg-red-900 dark:text-red-300">68288</span> {"<- 상품코드"}
+                              <svg className="w-6 h-6 text-gray-800 dark:text-white m-auto" aria-hidden="true" xmlns="https://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19V5m0 14-4-4m4 4 4-4" />
+                              </svg>
+                              ex) https://quokka.com/?qIDX=
+                              <span className="bg-blue-100 text-blue-800 text-xs font-medium py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">{"{product_code}"}</span> {"<-중괄호까지 바꿔넣기"}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                              <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="https://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m5 12 4.7 4.5 9.3-9" />
+                              </svg>
+                              도매업 정보는<span className="bg-blue-100 text-blue-800 text-xs font-medium py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">[대쉬보드 -{">"} 도매업 업데이트]</span>{" "}
+                              클릭해주세요.
+                            </p>
+                          </div>
 
                           <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                             <tbody>

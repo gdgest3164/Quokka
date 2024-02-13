@@ -1,3 +1,5 @@
+import { ProductsResponse } from "../Components/Product/product.type";
+
 //API 통신
 const server = "https://quokka.run:8000";
 //const server = "https://quokka.run"; //kjh 수정
@@ -139,7 +141,23 @@ export async function status_stockAutoProcess(cookies: string) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify({ cookies }),
+  });
+
+  return response;
+}
+//==========================================================
+
+//==========================================================
+//상품 등록 자동화
+export async function productAutoAddProcess(datas: { who: string; code: string }, items: ProductsResponse) {
+  const response = await fetch(`${server}/api/product/upload`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ datas, items }),
   });
 
   return response;

@@ -6,8 +6,9 @@ import Table from "../Components/Table/table";
 import Component from "../Components/Layouts/component";
 import StockModal from "../Components/Modals/StockModal";
 import { useEffect, useState } from "react";
-import { localAddressUpdate, productAddressUpdate, sellerProducts } from "../api/api";
+import { localAddressUpdate, productAddressUpdate, productAutoAddProcess, sellerProducts } from "../api/api";
 import { getSession } from "../utils/cookies";
+import ProductAddModal from "../Components/Modals/ProductAddModal";
 
 export const meta: MetaFunction = ({ error }) => {
   return [{ title: error ? "oops!" : "상품목록 | 쿼카" }];
@@ -24,14 +25,17 @@ export const loader: LoaderFunction = async ({ request }) => {
   if (!Qk_channel) return redirect("/");
 
   //상품 리스트 가져오기
-  const products: ProductsResponse = await sellerProducts({ size: size, page: page }, `Qk_channel=${encodeURIComponent(JSON.stringify(Qk_channel.data))}`);
+  const qk_channel = encodeURIComponent(JSON.stringify(Qk_channel.data));
+  const products: ProductsResponse = await sellerProducts({ size: size, page: page }, `Qk_channel=${qk_channel}`);
 
-  return json({ products });
+  // Qk_channel 데이터도 포함해서 반환
+  return json({ products, Qk_channel });
 };
 
 export default function ProductList() {
   const [stockModalOpen, setStockModalOpen] = useState(false);
-  const { products } = useLoaderData<typeof loader>();
+  const [productAddModalOpen, setProductAddModalOpen] = useState(false);
+  const { products, Qk_channel } = useLoaderData<typeof loader>();
   const [items, setItems] = useState<ProductsResponse | undefined>();
   const [address, setAddress] = useState<ProductAddress[]>([]);
   const { state } = useNavigation();
@@ -89,6 +93,11 @@ export default function ProductList() {
     setStockModalOpen(true);
   };
 
+  //상품등록 모달 오픈 이벤트
+  const productAddOpenModal = () => {
+    setProductAddModalOpen(true);
+  };
+
   //스톡 모달 url 입력 이벤트
   const stockModalUrl = async (datas: { addressBookNo: number; url: string }) => {
     const data = {
@@ -129,30 +138,53 @@ export default function ProductList() {
     }
   };
 
+  //상품 등록 이벤트
+  const productAddevent = async (datas: { who: string; code: string }) => {
+    const result = await productAutoAddProcess(datas, Qk_channel);
+    console.log(result);
+  };
+
   return (
     <>
       <Component>
         <div className="flex justify-between items-center">
           <div>총 {products.totalElements || 0}개</div>
-          <button
-            onClick={stockHandleOpenModal}
-            type="button"
-            className="text-black dark:text-white text-sm bg-[#e0e0e0] dark:bg-[#343a42] hover:bg-[#b8b8b8]/90 hover:dark:bg-[#24292F]/90 focus:ring-4 focus:outline-none focus:ring-[#aaaaaa]/50 font-medium rounded-lg px-3 py-2 text-center inline-flex items-center dark:focus:ring-gray-500 dark:hover:bg-[#050708]/30 me-2 mb-2"
-          >
-            <svg className="w-6 h-6 me-2 text-gray-800 dark:text-white" aria-hidden="true" xmlns="https://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M21 13v-2a1 1 0 0 0-1-1h-.8l-.7-1.7.6-.5a1 1 0 0 0 0-1.5L17.7 5a1 1 0 0 0-1.5 0l-.5.6-1.7-.7V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v.8l-1.7.7-.5-.6a1 1 0 0 0-1.5 0L5 6.3a1 1 0 0 0 0 1.5l.6.5-.7 1.7H4a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h.8l.7 1.7-.6.5a1 1 0 0 0 0 1.5L6.3 19a1 1 0 0 0 1.5 0l.5-.6 1.7.7v.8a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-.8l1.7-.7.5.6a1 1 0 0 0 1.5 0l1.4-1.4a1 1 0 0 0 0-1.5l-.6-.5.7-1.7h.8a1 1 0 0 0 1-1Z"
-              />
-              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-            </svg>
-            설정
-          </button>
+          <div>
+            <button
+              onClick={productAddOpenModal}
+              type="button"
+              className="text-black dark:text-white text-sm bg-[#e0e0e0] dark:bg-[#343a42] hover:bg-[#b8b8b8]/90 hover:dark:bg-[#24292F]/90 focus:ring-4 focus:outline-none focus:ring-[#aaaaaa]/50 font-medium rounded-lg px-3 py-2 text-center inline-flex items-center dark:focus:ring-gray-500 dark:hover:bg-[#050708]/30 me-2 mb-2"
+            >
+              <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="https://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  fillRule="evenodd"
+                  d="M4.9 3C3.9 3 3 3.8 3 4.9V9c0 1 .8 1.9 1.9 1.9H9c1 0 1.9-.8 1.9-1.9V5c0-1-.8-1.9-1.9-1.9H5Zm10 0c-1 0-1.9.8-1.9 1.9V9c0 1 .8 1.9 1.9 1.9H19c1 0 1.9-.8 1.9-1.9V5c0-1-.8-1.9-1.9-1.9h-4Zm-10 10c-1 0-1.9.8-1.9 1.9V19c0 1 .8 1.9 1.9 1.9H9c1 0 1.9-.8 1.9-1.9v-4c0-1-.8-1.9-1.9-1.9H5ZM18 14a1 1 0 1 0-2 0v2h-2a1 1 0 1 0 0 2h2v2a1 1 0 1 0 2 0v-2h2a1 1 0 1 0 0-2h-2v-2Z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              상품등록
+            </button>
+            <button
+              onClick={stockHandleOpenModal}
+              type="button"
+              className="text-black dark:text-white text-sm bg-[#e0e0e0] dark:bg-[#343a42] hover:bg-[#b8b8b8]/90 hover:dark:bg-[#24292F]/90 focus:ring-4 focus:outline-none focus:ring-[#aaaaaa]/50 font-medium rounded-lg px-3 py-2 text-center inline-flex items-center dark:focus:ring-gray-500 dark:hover:bg-[#050708]/30 me-2 mb-2"
+            >
+              <svg className="w-6 h-6 me-2 text-gray-800 dark:text-white" aria-hidden="true" xmlns="https://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M21 13v-2a1 1 0 0 0-1-1h-.8l-.7-1.7.6-.5a1 1 0 0 0 0-1.5L17.7 5a1 1 0 0 0-1.5 0l-.5.6-1.7-.7V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v.8l-1.7.7-.5-.6a1 1 0 0 0-1.5 0L5 6.3a1 1 0 0 0 0 1.5l.6.5-.7 1.7H4a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h.8l.7 1.7-.6.5a1 1 0 0 0 0 1.5L6.3 19a1 1 0 0 0 1.5 0l.5-.6 1.7.7v.8a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-.8l1.7-.7.5.6a1 1 0 0 0 1.5 0l1.4-1.4a1 1 0 0 0 0-1.5l-.6-.5.7-1.7h.8a1 1 0 0 0 1-1Z"
+                />
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+              </svg>
+              설정
+            </button>
+          </div>
         </div>
         <StockModal get_open={stockModalOpen} setOpen={setStockModalOpen} address={address} toggle_id={(e) => stockDataEvent(e)} input_url={(i, e) => stockModalUrl({ addressBookNo: i, url: e })} />
+        <ProductAddModal get_open={productAddModalOpen} setOpen={setProductAddModalOpen} address={address} input_datas={(e) => productAddevent(e)} />
 
         <Table
           table_title={table_title}
