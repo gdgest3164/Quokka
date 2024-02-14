@@ -54,6 +54,21 @@ export async function sellerProducts(data: { size: number; page: number }, cooki
 //==========================================================
 
 //==========================================================
+//카테고리 가져오기
+export async function categorySearch() {
+  const response = await fetch(`${server}/api/category/search`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  });
+  return response.json();
+}
+
+//==========================================================
+
+//==========================================================
 //로컬 도매 데이터 업데이트
 interface localAddressUpdateProp {
   addressBookNo: number;
@@ -151,7 +166,7 @@ export async function status_stockAutoProcess(cookies: string) {
 
 //==========================================================
 //상품 등록 자동화
-export async function productAutoAddProcess(datas: { who: string; code: string }, items: ProductsResponse) {
+export async function productAutoAddProcess(datas: { who: string; code: string; cate: string }, items: ProductsResponse) {
   const response = await fetch(`${server}/api/product/upload`, {
     method: "POST",
     headers: {

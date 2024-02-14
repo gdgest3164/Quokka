@@ -1,27 +1,39 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ProductAddress } from "../Product/product.type";
+import { categorySearch } from "../../api/api";
 
 interface ProductAddModalProps {
   get_open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   address: ProductAddress[];
-  input_datas: ({ who, code }: { who: string; code: string }) => void;
+  input_datas: ({ who, code }: { who: string; code: string; cate: string }) => void;
 }
 
 export default function ProductAddModal({ get_open, setOpen, address, input_datas }: ProductAddModalProps) {
   const [open, setOpenState] = useState(get_open || false);
   const [select, setSelect] = useState("");
+  const [cateSelect, setCateSelect] = useState("");
+  const [categorys, setCategorys] = useState<Array<[number, string, string, string]>>();
   const [code, setCode] = useState("");
+  const [filteredAddress, setFilteredAddress] = useState<Array<[number, string, string, string]>>();
   const cancelButtonRef = useRef(null);
 
   useEffect(() => {
     setOpenState(get_open);
+    const fetchCategorys = async () => {
+      const all_categorys = await categorySearch();
+      setCategorys(all_categorys);
+    };
+    fetchCategorys();
+  }, [get_open]);
+
+  useEffect(() => {
     address[0] && setSelect(address[0]["addressBookNo"].toString());
-  }, [address, get_open]);
+  }, [address]);
 
   const addButtonEvent = () => {
-    if (!code || !select) return;
+    if (!code || !select || !cateSelect) return;
 
     //url 검증 함수
     const isValidUrl = (urlString: string) => {
@@ -42,7 +54,7 @@ export default function ProductAddModal({ get_open, setOpen, address, input_data
       return;
     }
 
-    input_datas({ who: select, code: code });
+    input_datas({ who: select, code: code, cate: cateSelect });
   };
 
   return (
@@ -82,7 +94,7 @@ export default function ProductAddModal({ get_open, setOpen, address, input_data
                           <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                             <tbody>
                               <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                <th scope="row" className="py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                   <select
                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                     onChange={(e) => setSelect(e.target.value.toString())}
@@ -108,11 +120,42 @@ export default function ProductAddModal({ get_open, setOpen, address, input_data
                                     onInput={(e) => setCode((e.target as HTMLInputElement).value)}
                                   />
                                 </td>
-                                <td>
+                              </tr>
+                              <tr>
+                                <td colSpan={2}>
+                                  <div className="relative">
+                                    <input
+                                      id="search"
+                                      className={`bg-gray-50 border border-gray-300 sm:text-xs text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 my-3`}
+                                      type="text"
+                                      placeholder="카테고리 검색..."
+                                      onChange={(e) => {
+                                        const value = e.target.value.toLowerCase();
+                                        const filteredAddress = categorys ? categorys.filter((cate) => cate[2].includes(value)) : [];
+                                        setFilteredAddress(filteredAddress);
+                                      }}
+                                    />
+                                    <select
+                                      className={`bg-gray-50 border border-gray-300 sm:text-xs text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 `}
+                                      size={5}
+                                      onChange={(e) => setCateSelect(e.target.value)}
+                                    >
+                                      {filteredAddress &&
+                                        filteredAddress.map((cate, index) => (
+                                          <option key={index} value={cate[0]}>
+                                            {cate[1]}
+                                          </option>
+                                        ))}
+                                    </select>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td colSpan={2}>
                                   <button
                                     onClick={() => addButtonEvent()}
                                     type="button"
-                                    className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ml-3"
+                                    className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 text-nowrap w-full my-3"
                                   >
                                     상품추가
                                   </button>

@@ -139,7 +139,7 @@ export default function ProductList() {
   };
 
   //상품 등록 이벤트
-  const productAddevent = async (datas: { who: string; code: string }) => {
+  const productAddevent = async (datas: { who: string; code: string; cate: string }) => {
     const result = await productAutoAddProcess(datas, Qk_channel);
     console.log(result);
   };
