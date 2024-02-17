@@ -99,13 +99,15 @@ export default function StockModal({ get_open, setOpen, address, toggle_id, inpu
                                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19V5m0 14-4-4m4 4 4-4" />
                               </svg>
                               ex) https://quokka.com/?qIDX=
-                              <span className="bg-blue-100 text-blue-800 text-xs font-medium py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">{"{product_code}"}</span> {"<-중괄호까지 바꿔넣기"}
+                              <span className="bg-purple-100 text-purple-800 text-xs font-medium py-0.5 rounded dark:bg-purple-900 dark:text-purple-300">{"{product_code}"}</span>{" "}
+                              {"<-중괄호까지 바꿔넣기"}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
                               <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="https://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m5 12 4.7 4.5 9.3-9" />
                               </svg>
-                              도매업 정보는<span className="bg-blue-100 text-blue-800 text-xs font-medium py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">[대쉬보드 -{">"} 도매업 업데이트]</span>{" "}
+                              도매업 정보는
+                              <span className="bg-purple-100 text-purple-800 text-xs font-medium py-0.5 rounded dark:bg-purple-900 dark:text-purple-300">[대쉬보드 -{">"} 도매업 업데이트]</span>{" "}
                               클릭해주세요.
                             </p>
                           </div>
@@ -118,7 +120,7 @@ export default function StockModal({ get_open, setOpen, address, toggle_id, inpu
                                     <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                       <label className="relative inline-flex items-center cursor-pointer">
                                         <input type="checkbox" value={who.addressBookNo} checked={who.is_use} className="sr-only peer" onChange={() => toggleChange(who)} />
-                                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
                                         {/* Additional content */}
                                       </label>
                                     </th>

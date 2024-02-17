@@ -35,20 +35,52 @@ export async function apiSellerBrand() {
 //==========================================================
 
 //==========================================================
-//상품 리스트
+// 상품 리스트
+// 서버사이드 전용 함수
+export async function sellerProducts(data: { size: number; page: number; search?: string; searchType?: string }, cookies: string) {
+  try {
+    const response = await fetch(`${server}/api/seller/products`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: cookies,
+      },
+      credentials: "include",
+      body: JSON.stringify(data),
+    });
 
-export async function sellerProducts(data: { size: number; page: number }, cookies: string) {
-  const response = await fetch(`${server}/api/seller/products`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: cookies,
-    },
-    credentials: "include",
-    body: JSON.stringify(data),
-  });
+    if (!response.ok) {
+      throw new Error("서버에서 오류가 발생했습니다.");
+    }
 
-  return response.json();
+    return await response.json();
+  } catch (error) {
+    console.error("상품 리스트 요청 중 에러가 발생했습니다.", error);
+    throw error;
+  }
+}
+
+// 검색용 함수
+export async function sellerProductsSearch(data: { size: number; page: number; search?: string; searchType?: string }) {
+  try {
+    const response = await fetch(`${server}/api/seller/products`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error("서버에서 오류가 발생했습니다.");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("상품 리스트 요청 중 에러가 발생했습니다.", error);
+    throw error;
+  }
 }
 
 //==========================================================
@@ -175,6 +207,6 @@ export async function productAutoAddProcess(datas: { who: string; code: string; 
     body: JSON.stringify({ datas, items }),
   });
 
-  return response;
+  return response.json();
 }
 //==========================================================

@@ -73,13 +73,7 @@ export default function Index() {
             <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white flex items-center">
               재고 업데이트{updating && "중..."}
               <button className="ml-2" onClick={() => !updating && stockUpdate()} disabled={updating}>
-                <svg
-                  className={`${updating && "animate-spin"} w-6 h-6 hover:animate-spin text-gray-800 dark:text-white`}
-                  aria-hidden="true"
-                  xmlns="https://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
+                <svg className={`${updating && "animate-spin"} w-6 h-6 text-gray-800 dark:text-white`} aria-hidden="true" xmlns="https://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.7 7.7A7.1 7.1 0 0 0 5 10.8M18 4v4h-4m-7.7 8.3A7.1 7.1 0 0 0 19 13.2M6 20v-4h4" />
                 </svg>
               </button>
@@ -91,7 +85,7 @@ export default function Index() {
             <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white flex items-center">
               도매업 업데이트
               <button className="ml-2" onClick={() => wholesale_update()}>
-                <svg className={`w-6 h-6 hover:animate-spin text-gray-800 dark:text-white`} aria-hidden="true" xmlns="https://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg className={`w-6 h-6 text-gray-800 dark:text-white`} aria-hidden="true" xmlns="https://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.7 7.7A7.1 7.1 0 0 0 5 10.8M18 4v4h-4m-7.7 8.3A7.1 7.1 0 0 0 19 13.2M6 20v-4h4" />
                 </svg>
               </button>

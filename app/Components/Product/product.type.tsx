@@ -78,4 +78,6 @@ export interface ProductsResponse {
   size: number;
   address: ProductAddress[];
   result?: boolean;
+  search?: string;
+  searchType?: string;
 }

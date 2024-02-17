@@ -6,7 +6,7 @@ import Table from "../Components/Table/table";
 import Component from "../Components/Layouts/component";
 import StockModal from "../Components/Modals/StockModal";
 import { useEffect, useState } from "react";
-import { localAddressUpdate, productAddressUpdate, productAutoAddProcess, sellerProducts } from "../api/api";
+import { localAddressUpdate, productAddressUpdate, productAutoAddProcess, sellerProducts, sellerProductsSearch } from "../api/api";
 import { getSession } from "../utils/cookies";
 import ProductAddModal from "../Components/Modals/ProductAddModal";
 
@@ -35,9 +35,13 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function ProductList() {
   const [stockModalOpen, setStockModalOpen] = useState(false);
   const [productAddModalOpen, setProductAddModalOpen] = useState(false);
-  const { products, Qk_channel } = useLoaderData<typeof loader>();
-  const [items, setItems] = useState<ProductsResponse | undefined>();
+  const loaderData = useLoaderData<typeof loader>();
+  const products = loaderData.products;
+  const Qk_channel = loaderData.Qk_channel;
+  const [items, setItems] = useState<ProductsResponse>();
   const [address, setAddress] = useState<ProductAddress[]>([]);
+  const [searchType, setSearchType] = useState<"CHANNEL_PRODUCT_NO" | "PRODUCT_NO" | "SELLER_CODE">("CHANNEL_PRODUCT_NO");
+  const [search, setSearch] = useState<string>("");
   const { state } = useNavigation();
   const navigate = useNavigate();
 
@@ -47,8 +51,8 @@ export default function ProductList() {
   }, [products]);
 
   const table_title = [
-    { title: "상품번호", width: "5%" },
-    { title: "상품코드", width: "5%" },
+    { title: "채널 상품번호", width: "5%" },
+    { title: "판매자 관리 코드", width: "5%" },
     { title: "대표이미지", width: "5%" },
     { title: "상품명", width: "30%" },
     { title: "재고 수", width: "3%" },
@@ -139,23 +143,82 @@ export default function ProductList() {
   };
 
   //상품 등록 이벤트
-  const productAddevent = async (datas: { who: string; code: string; cate: string }) => {
+  const productAddevent = async (datas: { who: string; code: string; cate: string }): Promise<boolean> => {
     const result = await productAutoAddProcess(datas, Qk_channel);
-    console.log(result);
+    // console.log(result);
+    if (result.result.originProductNo) {
+      alert("상품 업로드 성공!");
+      window.location.reload();
+      window.open(`${Qk_channel.data.url}/products/${result.result.smartstoreChannelProductNo}`, "_blank");
+      return true;
+    } else {
+      alert(
+        result.result.invalidInputs && result.result.invalidInputs.length > 0
+          ? `${result.result.code}\n${result.result.message}\n문제점: ${result.result.invalidInputs.map((input: { name: string; message: string }) => `${input.message}`).join(", ")}`
+          : `오류 코드: ${result.result.code}\n메시지: ${result.result.message}`
+      );
+      return false;
+    }
+  };
+
+  //상품 검색 이벤트
+  const productSearch = async () => {
+    // if (search.length <= 1) return;
+    const searchParams = new URLSearchParams(window.location.search);
+    const size = parseInt(searchParams.get("size") || "10");
+    const page = parseInt(searchParams.get("page") || "1");
+    const search_products: ProductsResponse = await sellerProductsSearch({ size: size, page: page, search: search, searchType: searchType });
+    setItems(search_products);
   };
 
   return (
     <>
       <Component>
-        <div className="flex justify-between items-center">
-          <div>총 {products.totalElements || 0}개</div>
-          <div>
+        <div className="grid grid-cols-[.3fr_1fr] md:grid-cols-[.3fr_2fr_1fr] items-center">
+          <div className="whitespace-nowrap">총 {(items && items.totalElements) || 0}개</div>
+
+          <div className="mb-2 max-w-96 mx-3">
+            <div className="flex">
+              <select
+                defaultValue={searchType}
+                onChange={(e) => setSearchType(e.target.value as "CHANNEL_PRODUCT_NO" | "PRODUCT_NO" | "SELLER_CODE")}
+                className="flex-shrink-0 inline-flex items-center text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600"
+              >
+                <option value="CHANNEL_PRODUCT_NO">채널 상품번호</option>
+                <option value="PRODUCT_NO">원상품번호</option>
+                <option value="SELLER_CODE">판매자 관리 코드</option>
+              </select>
+              <div className="relative w-full border-l-0">
+                <input
+                  type="search"
+                  id="search-dropdown"
+                  onInput={(e) => setSearch((e.target as HTMLInputElement).value)}
+                  onKeyUp={(e) => {
+                    if (e.key === "Enter") {
+                      productSearch();
+                    }
+                  }}
+                  className="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-s-gray-700  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-purple-500"
+                />
+
+                <button
+                  className="absolute top-0 end-0 p-2.5 text-sm font-medium h-full text-white bg-purple-700 rounded-e-lg border border-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800"
+                  onClick={() => productSearch()}
+                >
+                  <svg className="w-4 h-4" aria-hidden="true" fill="none" viewBox="0 0 20 20">
+                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="col-span-2 md:col-span-1 text-right whitespace-nowrap">
             <button
               onClick={productAddOpenModal}
               type="button"
               className="text-black dark:text-white text-sm bg-[#e0e0e0] dark:bg-[#343a42] hover:bg-[#b8b8b8]/90 hover:dark:bg-[#24292F]/90 focus:ring-4 focus:outline-none focus:ring-[#aaaaaa]/50 font-medium rounded-lg px-3 py-2 text-center inline-flex items-center dark:focus:ring-gray-500 dark:hover:bg-[#050708]/30 me-2 mb-2"
             >
-              <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="https://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" fill="currentColor" viewBox="0 0 24 24">
                 <path
                   fillRule="evenodd"
                   d="M4.9 3C3.9 3 3 3.8 3 4.9V9c0 1 .8 1.9 1.9 1.9H9c1 0 1.9-.8 1.9-1.9V5c0-1-.8-1.9-1.9-1.9H5Zm10 0c-1 0-1.9.8-1.9 1.9V9c0 1 .8 1.9 1.9 1.9H19c1 0 1.9-.8 1.9-1.9V5c0-1-.8-1.9-1.9-1.9h-4Zm-10 10c-1 0-1.9.8-1.9 1.9V19c0 1 .8 1.9 1.9 1.9H9c1 0 1.9-.8 1.9-1.9v-4c0-1-.8-1.9-1.9-1.9H5ZM18 14a1 1 0 1 0-2 0v2h-2a1 1 0 1 0 0 2h2v2a1 1 0 1 0 2 0v-2h2a1 1 0 1 0 0-2h-2v-2Z"
@@ -169,7 +232,7 @@ export default function ProductList() {
               type="button"
               className="text-black dark:text-white text-sm bg-[#e0e0e0] dark:bg-[#343a42] hover:bg-[#b8b8b8]/90 hover:dark:bg-[#24292F]/90 focus:ring-4 focus:outline-none focus:ring-[#aaaaaa]/50 font-medium rounded-lg px-3 py-2 text-center inline-flex items-center dark:focus:ring-gray-500 dark:hover:bg-[#050708]/30 me-2 mb-2"
             >
-              <svg className="w-6 h-6 me-2 text-gray-800 dark:text-white" aria-hidden="true" xmlns="https://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 me-2 text-gray-800 dark:text-white" aria-hidden="true" fill="none" viewBox="0 0 24 24">
                 <path
                   stroke="currentColor"
                   strokeLinecap="round"
@@ -184,7 +247,7 @@ export default function ProductList() {
           </div>
         </div>
         <StockModal get_open={stockModalOpen} setOpen={setStockModalOpen} address={address} toggle_id={(e) => stockDataEvent(e)} input_url={(i, e) => stockModalUrl({ addressBookNo: i, url: e })} />
-        <ProductAddModal get_open={productAddModalOpen} setOpen={setProductAddModalOpen} address={address} input_datas={(e) => productAddevent(e)} />
+        <ProductAddModal get_open={productAddModalOpen} setOpen={setProductAddModalOpen} address={address} input_datas={(datas) => productAddevent(datas)} />
 
         <Table
           table_title={table_title}
@@ -200,7 +263,7 @@ export default function ProductList() {
                           <div className="space-y-3">
                             {t.title == "대표이미지" ? (
                               <div className="flex items-center justify-center bg-slate-200 dark:bg-slate-500 col-span-2 w-24 h-20 rounded">
-                                <svg className="w-10 h-10 text-gray-300 dark:text-gray-600" aria-hidden="true" xmlns="https://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                                <svg className="w-10 h-10 text-gray-300 dark:text-gray-600" aria-hidden="true" fill="currentColor" viewBox="0 0 20 18">
                                   <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z" />
                                 </svg>
                               </div>
@@ -242,7 +305,7 @@ export default function ProductList() {
                     <td className="px-4 py-3">{product.channelProducts[0].sellerManagementCode || "! 기재 필요 !"}</td>
                     <td className="px-4 py-3">
                       <img
-                        src={product.channelProducts[0].representativeImage.url.replace("http://", "https://")}
+                        src={product.channelProducts[0].representativeImage.url.replace("https://", "https://")}
                         alt={product.channelProducts[0].name}
                         className={"w-28 rounded-md shadow-xl min-w-24"}
                         loading="lazy"
@@ -290,7 +353,7 @@ export default function ProductList() {
                     <td className="px-4 py-3 whitespace-nowrap">
                       <select
                         id="countries"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 min-w-24"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500 min-w-24"
                         onChange={(e) => handleWholesaleAddress(e, product.originProductNo)}
                         defaultValue={product.channelProducts[0].details && product.channelProducts[0].details.length > 0 ? product.channelProducts[0].details[0].addressBookNo : "없음"}
                       >
