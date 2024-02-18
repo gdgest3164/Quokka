@@ -26,6 +26,6 @@ export const channelNoCookie = async (request: Request, name: string, datas: cha
   const session = await getSession(request.headers.get("Cookie"));
   // const expires = new Date(Date.now() + 1000 * 60 * 60 * 24 * 2); // 이틀 후 만료
   session.set(name, datas);
-  const create_cookie = await commitSession(session, { sameSite: "none", httpOnly: false, secure: true });
+  const create_cookie = await commitSession(session, { sameSite: "none", httpOnly: true, secure: true });
   return create_cookie;
 };
