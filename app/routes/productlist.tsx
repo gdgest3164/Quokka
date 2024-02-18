@@ -167,7 +167,8 @@ export default function ProductList() {
     const searchParams = new URLSearchParams(window.location.search);
     const size = parseInt(searchParams.get("size") || "10");
     const page = parseInt(searchParams.get("page") || "1");
-    const search_products: ProductsResponse = await sellerProductsSearch({ size: size, page: page, search: search, searchType: searchType });
+    const qk_channel = encodeURIComponent(JSON.stringify(Qk_channel.data));
+    const search_products: ProductsResponse = await sellerProducts({ size: size, page: page, search: search, searchType: searchType }, `Qk_channel=${qk_channel}`);
     setItems(search_products);
   };
 

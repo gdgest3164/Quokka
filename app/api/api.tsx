@@ -60,29 +60,6 @@ export async function sellerProducts(data: { size: number; page: number; search?
   }
 }
 
-// 검색용 함수
-export async function sellerProductsSearch(data: { size: number; page: number; search?: string; searchType?: string }) {
-  try {
-    const response = await fetch(`${server}/api/seller/products`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      throw new Error("서버에서 오류가 발생했습니다.");
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("상품 리스트 요청 중 에러가 발생했습니다.", error);
-    throw error;
-  }
-}
-
 //==========================================================
 
 //==========================================================
