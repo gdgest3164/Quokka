@@ -39,6 +39,7 @@ export async function apiSellerBrand() {
 // 서버사이드 전용 함수
 export async function sellerProducts(data: { size: number; page: number; search?: string; searchType?: string }, cookies: string) {
   try {
+    console.log(cookies);
     const response = await fetch(`${server}/api/seller/products`, {
       method: "POST",
       headers: {
