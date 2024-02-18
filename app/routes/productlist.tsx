@@ -6,7 +6,7 @@ import Table from "../Components/Table/table";
 import Component from "../Components/Layouts/component";
 import StockModal from "../Components/Modals/StockModal";
 import { useEffect, useState } from "react";
-import { localAddressUpdate, productAddressUpdate, productAutoAddProcess, sellerProducts, sellerProductsSearch } from "../api/api";
+import { localAddressUpdate, productAddressUpdate, productAutoAddProcess, sellerProducts } from "../api/api";
 import { getSession } from "../utils/cookies";
 import ProductAddModal from "../Components/Modals/ProductAddModal";
 

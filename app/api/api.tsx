@@ -1,8 +1,8 @@
 import { ProductsResponse } from "../Components/Product/product.type";
 
 //API 통신
-const server = "https://quokka.run:8000";
-//const server = "https://quokka.run"; //kjh 수정
+// const server = "http://127.0.0.1:8000";
+const server = "https://quokka.run";
 
 //==========================================================
 //로그인
