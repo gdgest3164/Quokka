@@ -310,6 +310,7 @@ export default function ProductList() {
                         alt={product.channelProducts[0].name}
                         className={"w-28 rounded-md shadow-xl min-w-24"}
                         loading="lazy"
+                        crossOrigin="anonymous"
                       />
                     </td>
                     <td className="px-4 py-3 text-sm whitespace-nowrap min-w-20 max-w-32 overflow-auto sm:whitespace-nowrap  md:whitespace-nowrap  lg:whitespace-nowrap xl:whitespace-normal">

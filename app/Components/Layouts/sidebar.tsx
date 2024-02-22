@@ -40,7 +40,7 @@ export default function Sidebar(brand: SidebarProps) {
         <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
           <div className="flex justify-between items-center mb-5">
             <a href={brand.url} className="flex items-center" target="_blank" rel="noreferrer">
-              <img src={brand.representativeImageUrl.replace("http://", "https://")} className="w-10 h-10 rounded-full mr-3" alt={brand.name} />
+              <img src={brand.representativeImageUrl.replace("http://", "https://")} className="w-10 h-10 rounded-full mr-3" alt={brand.name} crossOrigin="anonymous" />
               <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">{brand.name}</span>
             </a>
             <Switcher />
